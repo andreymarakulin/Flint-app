@@ -1,0 +1,63 @@
+<resources>
+    <string name="app_name">Flint</string>
+
+
+    <!--Descriptions-->
+    <string name="go_back">Go back to route</string>
+
+    <!--Labels для text field-->
+    <string name="email_label">Email</string>
+    <string name="password_label">Password</string>
+    <string name="title_label">Title</string>
+    <string name="text_label">Text</string>
+
+    <!--ЗАголовки для кнопок title buttons-->
+    <string name="continue_button">Continue</string>
+    <string name="sign_up_button">Sign up</string>
+
+    <!--Screens titles заголовки для экранов-->
+    <string name="sign_in_screen_title">Sign in</string>
+    <string name="sign_up_screen_title">Sign up</string>
+    <string name="entry_screen_title">Entry</string>
+    <string name="edit_screen_title">Edit</string>
+    <string name="category_screen_title">Category</string>
+    <string name="todo_screen_title">Todo</string>
+
+
+    <string name="sign_in_screen_text">Sign in ANDMAR id</string>
+
+    <string name="user_agreement_title">By clicking on the button you agree to the user agreement</string>
+
+    <!--Entry category screen-->
+    <string name="entry_category_screen_title">Entry your category</string>
+
+    <!--Edit category screen-->
+    <string name="edit_category_screen_title">Edit your category</string>
+
+    <!--Entry note screen-->
+    <string name="entry_note_screen_title">Entry your note</string>
+
+    <!--Edit note screen-->
+    <string name="edit_note_screen_title">Edit your note</string>
+
+    <!--Todo screen-->
+    <string name="todo_scree_title">E</string>
+
+    <!--Entry todo screen-->
+    <string name="entry_todo_screen_title">Entry your todo</string>
+
+    <!--Edit todo screen-->
+    <string name="edit_todo_screen_title">Edit your todo</string>
+
+
+    <!--Note actions title заголовки для меню заметок-->
+    <string name="fix_note_title">Fix</string>
+    <string name="unfix_note_title">Unfix</string>
+    <string name="done_note_title">Done</string>
+    <string name="undone_note_title">Undone</string>
+    <string name="highlight_note_title">Highlight</string>
+    <string name="unhighlight_note_title">Unhighlight</string>
+    <string name="edit_note_title">Edit</string>
+    <string name="delete_note_title">Delete</string>
+
+</resources>

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "226406723451",
+    "project_id": "andmar-projects",
+    "storage_bucket": "andmar-projects.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:226406723451:android:624d869e9c8f4ddd2857de",
+        "android_client_info": {
+          "package_name": "com.andmar.flint"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBel9shLnCU1d-D-DENPCAAa-GF_Hw-aeA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
