@@ -1,2 +1,3 @@
 /build
-/src/firebase/java/com/andmar/flint/google-services.json
+/release
+/google-services.json
