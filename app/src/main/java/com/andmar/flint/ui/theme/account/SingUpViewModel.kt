@@ -4,11 +4,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.andmar.flint.FlintActions
-import com.andmar.flint.data.DefaultFlintRepository
+import com.andmar.flint.FlintRepository
+import kotlinx.coroutines.launch
 
 class SingUpViewModel(
-    private val flintRepository: DefaultFlintRepository
+    private val flintRepository: FlintRepository
 ): ViewModel() {
 
     var signUpUiState by mutableStateOf(SignUpUiState())
@@ -43,9 +45,13 @@ class SingUpViewModel(
     }
 
     private fun createUser() {
-        flintRepository.createUser(
-            authItem = signUpUiState.authDetails.toAuthItem(),
-        ) { updateFlintActions(it) }
+        viewModelScope.launch {
+            try {
+                flintRepository.createUser(signUpUiState.authDetails)
+            } catch (e: Exception) {
+
+            }
+        }
     }
 
     private fun updateUserAgreement(isUserAgreement: Boolean) {

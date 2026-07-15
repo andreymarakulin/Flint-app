@@ -71,6 +71,7 @@ fun NavigationClient(
         //Category
         composable<CategoryScreenRoute> {
             CategoryScreen(
+                onNavEntryCategory = { navController.navigate(EntryCategoryScreenRoute) },
                 onNavEditCategory = { navController.navigate(EditCategoryScreenRoute(it)) }
             ) { navController.navigateUp() }
         }

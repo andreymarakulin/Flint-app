@@ -6,23 +6,22 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.andmar.flint.FlintActions
-import com.andmar.flint.data.DefaultFlintRepository
+import com.andmar.flint.FlintRepository
 import com.andmar.flint.ui.theme.home.CategoryDetailsState
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 class CategoryViewModel(
-    private val flintRepository: DefaultFlintRepository
+    private val flintRepository: FlintRepository
 ): ViewModel() {
 
     val categoryDetailsState: StateFlow<CategoryDetailsState> =
         flintRepository.getCategories().map { categoryItems ->
             CategoryDetailsState(
-                categoryItems.sortedByDescending { it.fix }.map { categoryItem ->
-                    categoryItem.toCategoryDetails()
-                }
+                categoryItems.sortedByDescending { it.fix }
             )
         }.stateIn(
             scope = viewModelScope,
@@ -62,27 +61,46 @@ class CategoryViewModel(
     private fun fixCategory() {
         val categoryDetails = categoryUiState.selectedCategoryDetails
 
-        flintRepository.editCategory(
-            categoryItem = categoryDetails.copy(
-                fix = !categoryDetails.fix
-            ).toCategoryItem()
-        ) { updateFlintActions(it) }
+        viewModelScope.launch {
+            updateFlintActions(FlintActions.Loading)
+            try {
+                flintRepository.editCategory(
+                    categoryDetails.copy(fix = !categoryDetails.fix)
+                )
+                updateFlintActions(FlintActions.Success)
+            } catch (e: Exception) {
+                updateFlintActions(FlintActions.Error(e.message ?: "Error"))
+            }
+        }
     }
 
     private fun highlightCategory() {
         val categoryDetails = categoryUiState.selectedCategoryDetails
 
-        flintRepository.editCategory(
-            categoryItem = categoryDetails.copy(
-                 highlight = !categoryDetails.highlight
-            ).toCategoryItem()
-        ) { updateFlintActions(it) }
+        viewModelScope.launch {
+            updateFlintActions(FlintActions.Loading)
+            try {
+                flintRepository.editCategory(
+                    categoryDetails.copy(highlight = !categoryDetails.highlight)
+                )
+                updateFlintActions(FlintActions.Success)
+            } catch (e: Exception) {
+                updateFlintActions(FlintActions.Error(e.message ?: "Error"))
+            }
+        }
     }
 
     private fun deleteCategory() {
-        flintRepository.deleteCategory(
-            categoryItem = categoryUiState.selectedCategoryDetails.toCategoryItem()
-        ) { updateFlintActions(it) }
+
+        viewModelScope.launch {
+            updateFlintActions(FlintActions.Loading)
+            try {
+                flintRepository.deleteCategory(categoryUiState.selectedCategoryDetails)
+                updateFlintActions(FlintActions.Success)
+            } catch (e: Exception) {
+                updateFlintActions(FlintActions.Error(e.message ?: "Error"))
+            }
+        }
     }
 }
 

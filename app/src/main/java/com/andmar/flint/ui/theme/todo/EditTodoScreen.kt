@@ -10,8 +10,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.andmar.flint.DefaultButton
+import com.andmar.flint.DefaultLoadingDialog
 import com.andmar.flint.DefaultScreenText
 import com.andmar.flint.DefaultTopAppBar
+import com.andmar.flint.ErrorDialog
+import com.andmar.flint.FlintActions
 import com.andmar.flint.FlintViewModelProvider
 import com.andmar.flint.R
 import kotlinx.serialization.Serializable
@@ -28,7 +31,7 @@ fun EditTodoScreen(
     Scaffold(
         topBar = {
             DefaultTopAppBar(
-                title = stringResource(R.string.edit_screen_title),
+                title = "",
                 navIcon = R.drawable.arrow_back,
                 navDes = null,
                 onNavIcon = onNavBack
@@ -37,7 +40,8 @@ fun EditTodoScreen(
     ) { innerPadding ->
         EditTodoBody(
             innerPaddingValues = innerPadding,
-            editTodoUiState = viewModel.editTodoUiState
+            editTodoUiState = viewModel.editTodoUiState,
+            onSuccess = onNavBack
         ) { viewModel.onActions(it) }
     }
 }
@@ -46,6 +50,7 @@ fun EditTodoScreen(
 fun EditTodoBody(
     innerPaddingValues: PaddingValues,
     editTodoUiState: EditTodoUiState,
+    onSuccess: () -> Unit,
     onActions: (EditTodoActions) -> Unit
 ) {
     Column(
@@ -61,5 +66,16 @@ fun EditTodoBody(
             title = stringResource(R.string.continue_button),
             enabled = editTodoUiState.isAction
         ) { onActions(EditTodoActions.EditTodo) }
+    }
+
+    when(editTodoUiState.flintActions) {
+        is FlintActions.Default -> {}
+        is FlintActions.Success -> onSuccess()
+        is FlintActions.Loading -> DefaultLoadingDialog()
+        is FlintActions.Error -> {
+            ErrorDialog(
+                message = editTodoUiState.flintActions.message
+            ) { onActions(EditTodoActions.DismissError) }
+        }
     }
 }

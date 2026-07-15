@@ -1,18 +1,18 @@
 package com.andmar.flint.ui.theme.note
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.andmar.flint.FlintActions
-import com.andmar.flint.data.DefaultFlintRepository
-import com.andmar.flint.firebase.NoteItem
+import com.andmar.flint.FlintRepository
+import kotlinx.coroutines.launch
 
 class EntryNoteViewModel(
-    private val flintRepository: DefaultFlintRepository,
+    private val flintRepository: FlintRepository,
     savedStateHandle: SavedStateHandle
 ): ViewModel() {
 
@@ -47,11 +47,18 @@ class EntryNoteViewModel(
     }
 
     private fun createNote() {
-        flintRepository.createNote(
-            noteItem = entryNoteUiState.noteDetails
-                .copy(categoryId = categoryId)
-                .toNoteItem()
-        ) { updateFlintActions(it) }
+        viewModelScope.launch {
+            updateFlintActions(FlintActions.Loading)
+            try {
+                flintRepository.createNote(
+                    entryNoteUiState.noteDetails
+                        .copy(categoryId = categoryId)
+                )
+                updateFlintActions(FlintActions.Success)
+            } catch (e: Exception) {
+                updateFlintActions(FlintActions.Error(e.message ?: "Error"))
+            }
+        }
     }
 }
 
@@ -82,26 +89,3 @@ fun isNoteAction(noteDetails: NoteDetails): Boolean {
         title.isNotBlank() || text.isNotBlank()
     }
 }
-
-fun NoteDetails.toNoteItem(): NoteItem = NoteItem(
-    id = id,
-    categoryId = categoryId,
-    title = title,
-    text = text,
-    fix = fix,
-    done = done,
-    highlight = highlight,
-    updateTime = System.currentTimeMillis()
-)
-
-fun NoteItem.toNoteDetails(): NoteDetails = NoteDetails(
-    id = id,
-    categoryId = categoryId,
-    title = title,
-    text = text,
-    fix = fix,
-    done = done,
-    highlight = highlight,
-    updateTime = updateTime
-)
-

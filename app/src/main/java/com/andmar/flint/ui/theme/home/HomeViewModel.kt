@@ -1,5 +1,6 @@
 package com.andmar.flint.ui.theme.home
 
+import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -7,22 +8,18 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.andmar.flint.FlintActions
-import com.andmar.flint.data.DefaultFlintRepository
+import com.andmar.flint.FlintRepository
 import com.andmar.flint.ui.theme.category.CategoryDetails
-import com.andmar.flint.ui.theme.category.toCategoryDetails
 import com.andmar.flint.ui.theme.note.NoteDetails
-import com.andmar.flint.ui.theme.note.toNoteDetails
-import com.andmar.flint.ui.theme.note.toNoteItem
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.filter
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 class HomeViewModel(
-    private val flintRepository: DefaultFlintRepository
+    private val flintRepository: FlintRepository
 ): ViewModel() {
 
     val authState: StateFlow<AuthState> =
@@ -37,9 +34,7 @@ class HomeViewModel(
     val categoryDetailsState: StateFlow<CategoryDetailsState> =
         flintRepository.getCategories().map { categoryItems ->
             CategoryDetailsState(
-                categoryItems.sortedByDescending { it.fix }.map { categoryItem ->
-                    categoryItem.toCategoryDetails()
-                }
+                categoryItems.sortedByDescending { it.fix }
             )
         }.stateIn(
             scope = viewModelScope,
@@ -49,10 +44,9 @@ class HomeViewModel(
 
     val noteDetailsState: StateFlow<NoteDetailsState> =
         flintRepository.getNotes().map { noteItems ->
+            Log.i("tst", noteItems.toString())
             NoteDetailsState(
-                noteItems.sortedByDescending { it.fix }.map { noteItem ->
-                    noteItem.toNoteDetails()
-                }
+                noteItems.sortedByDescending { it.fix }
             )
         }.stateIn(
             scope = viewModelScope,
@@ -78,7 +72,8 @@ class HomeViewModel(
             if (categories.isEmpty() || selectedTabIndex !in categories.indices) {
                 HomeContentState(
                     filteredNotes = emptyList(),
-                    categories = categories
+                    categories = categories,
+                    authStateActions = AuthStateActions.Authorized
                 )
             } else {
                 val currentCategory = categories[selectedTabIndex]
@@ -89,7 +84,7 @@ class HomeViewModel(
                     filteredNotes = filtered,
                     categories = categories,
                     selectedCategoryDetails = currentCategory,
-                    isAuth = true,
+                    authStateActions = AuthStateActions.Authorized,
                     isLoading = false
                 )
             }
@@ -97,7 +92,7 @@ class HomeViewModel(
             HomeContentState(
                 filteredNotes = emptyList(),
                 categories = emptyList(),
-                isAuth = false,
+                authStateActions = AuthStateActions.Unauthorized,
                 isLoading = false
             )
         }
@@ -146,37 +141,61 @@ class HomeViewModel(
     private fun fixNote() {
         val noteDetails = homeUiState.selectedNoteDetails
 
-        flintRepository.editNote(
-            noteItem = noteDetails
-                .copy(fix = !noteDetails.fix)
-                .toNoteItem()
-        ) {}
+        viewModelScope.launch {
+            try {
+                updateFlintActions(FlintActions.Loading)
+                flintRepository.editNote(
+                    noteDetails.copy(fix = !noteDetails.fix)
+                )
+                updateFlintActions(FlintActions.Success)
+            } catch (e: Exception) {
+                updateFlintActions(FlintActions.Error(e.message ?: "Error"))
+            }
+        }
     }
 
     private fun doneNote() {
         val noteDetails = homeUiState.selectedNoteDetails
 
-        flintRepository.editNote(
-            noteItem = noteDetails
-                .copy(done = !noteDetails.done)
-                .toNoteItem()
-        ) {}
+        viewModelScope.launch {
+            try {
+                updateFlintActions(FlintActions.Loading)
+                flintRepository.editNote(
+                    noteDetails.copy(done = !noteDetails.done)
+                )
+                updateFlintActions(FlintActions.Success)
+            } catch (e: Exception) {
+                updateFlintActions(FlintActions.Error(e.message ?: "Error"))
+            }
+        }
     }
 
     private fun highlightNote() {
         val noteDetails = homeUiState.selectedNoteDetails
 
-        flintRepository.editNote(
-            noteItem = noteDetails
-                .copy(highlight = !noteDetails.highlight)
-                .toNoteItem()
-        ) {}
+        viewModelScope.launch {
+            try {
+                updateFlintActions(FlintActions.Loading)
+                flintRepository.editNote(
+                    noteDetails.copy(highlight = !noteDetails.highlight)
+                )
+                updateFlintActions(FlintActions.Success)
+            } catch (e: Exception) {
+                updateFlintActions(FlintActions.Error(e.message ?: "Error"))
+            }
+        }
     }
 
     private fun deleteNote() {
-        flintRepository.deleteNote(
-            noteItem = homeUiState.selectedNoteDetails.toNoteItem()
-        ) { updateFlintActions(it) }
+        viewModelScope.launch {
+            updateFlintActions(FlintActions.Loading)
+            try {
+                flintRepository.deleteNote(homeUiState.selectedNoteDetails)
+                updateFlintActions(FlintActions.Success)
+            } catch (e: Exception) {
+                updateFlintActions(FlintActions.Error(e.message ?: "Error"))
+            }
+        }
     }
 }
 
@@ -194,17 +213,23 @@ data class HomeContentState(
     val filteredNotes: List<NoteDetails> = emptyList(),
     val categories: List<CategoryDetails> = emptyList(),
     val selectedCategoryDetails: CategoryDetails = CategoryDetails(),
-    val isAuth: Boolean = false,
+    val authStateActions: AuthStateActions = AuthStateActions.Loading,
     val isLoading: Boolean = true
 )
 
-sealed interface HomeActions {
-    data class UpdateSelectedTanIndex(val selectedTabIndex: Int): HomeActions
-    data class UpdateSelectedNoteDetails(val noteDetails: NoteDetails): HomeActions
-    object FixNote: HomeActions
-    object DoneNote: HomeActions
-    object HighlightNote: HomeActions
-    object DeleteNote: HomeActions
+sealed interface AuthStateActions {
+    object Loading : AuthStateActions
+    object Authorized : AuthStateActions
+    object Unauthorized : AuthStateActions
+}
 
-    object DismissError: HomeActions
+sealed interface HomeActions {
+    data class UpdateSelectedTanIndex(val selectedTabIndex: Int) : HomeActions
+    data class UpdateSelectedNoteDetails(val noteDetails: NoteDetails) : HomeActions
+    object FixNote : HomeActions
+    object DoneNote : HomeActions
+    object HighlightNote : HomeActions
+    object DeleteNote : HomeActions
+
+    object DismissError : HomeActions
 }

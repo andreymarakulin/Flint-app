@@ -4,11 +4,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.andmar.flint.FlintActions
-import com.andmar.flint.data.DefaultFlintRepository
+import com.andmar.flint.FlintRepository
+import kotlinx.coroutines.launch
 
 class EditLabelViewModel(
-    private val flintRepository: DefaultFlintRepository
+    private val flintRepository: FlintRepository
 ): ViewModel() {
 
     var editLabelUiState by mutableStateOf(EditLabelUiState())
@@ -40,7 +42,15 @@ class EditLabelViewModel(
     }
 
     private fun editLabel() {
+        viewModelScope.launch {
+            updateFlintActions(FlintActions.Loading)
+            try {
 
+                updateFlintActions(FlintActions.Success)
+            } catch (e: Exception) {
+                updateFlintActions(FlintActions.Error(e.message ?: "Error"))
+            }
+        }
     }
 }
 

@@ -4,12 +4,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.andmar.flint.FlintActions
-import com.andmar.flint.data.DefaultFlintRepository
-import com.andmar.flint.firebase.CategoryItem
+import com.andmar.flint.FlintRepository
+import kotlinx.coroutines.launch
+import java.util.UUID
 
 class EntryCategoryViewModel(
-    private val flintRepository: DefaultFlintRepository
+    private val flintRepository: FlintRepository
 ): ViewModel() {
 
     var entryCategoryUiState by mutableStateOf(EntryCategoryUiState())
@@ -41,9 +43,15 @@ class EntryCategoryViewModel(
     }
 
     private fun createCategory() {
-        flintRepository.createCategory(
-            categoryItem = entryCategoryUiState.categoryDetails.toCategoryItem()
-        ) {}
+        viewModelScope.launch {
+            updateFlintActions(FlintActions.Loading)
+            try {
+                flintRepository.createCategory(entryCategoryUiState.categoryDetails)
+                updateFlintActions(FlintActions.Success)
+            } catch (e: Exception) {
+                updateFlintActions(FlintActions.Error(e.message ?: "Error"))
+            }
+        }
     }
 }
 
@@ -70,20 +78,3 @@ data class CategoryDetails(
 fun isCategoryAction(categoryDetails: CategoryDetails): Boolean {
     return categoryDetails.title.isNotBlank()
 }
-
-fun CategoryItem.toCategoryDetails(): CategoryDetails = CategoryDetails(
-    id = id,
-    title = title,
-    fix = fix,
-    highlight = highlight,
-    updateTime = updateTime
-)
-
-
-fun CategoryDetails.toCategoryItem(): CategoryItem = CategoryItem(
-    id = id,
-    title = title,
-    fix = fix,
-    highlight = highlight,
-    updateTime = System.currentTimeMillis()
-)

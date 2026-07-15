@@ -4,12 +4,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.andmar.flint.FlintActions
-import com.andmar.flint.data.DefaultFlintRepository
-import com.andmar.flint.firebase.AuthItem
+import com.andmar.flint.FlintRepository
+import kotlinx.coroutines.launch
 
 class SignInViewModel(
-    private val flintRepository: DefaultFlintRepository
+    private val flintRepository: FlintRepository
 ): ViewModel() {
 
     var signInUiState by mutableStateOf(SignInUiState())
@@ -44,9 +45,13 @@ class SignInViewModel(
     }
 
     private fun signIn() {
-        flintRepository.signIn(
-            authItem = signInUiState.authDetails.toAuthItem(),
-        ) { updateFlintActions(it) }
+        viewModelScope.launch {
+            try {
+                flintRepository.signIn(signInUiState.authDetails)
+            }catch (e: Exception) {
+
+            }
+        }
     }
 }
 
@@ -73,8 +78,3 @@ fun isSignInAction(authDetails: AuthDetails, agreement: Boolean): Boolean {
         email.isNotBlank() && password.isNotBlank() && agreement
     }
 }
-
-fun AuthDetails.toAuthItem(): AuthItem = AuthItem(
-    email = email,
-    password = password
-)

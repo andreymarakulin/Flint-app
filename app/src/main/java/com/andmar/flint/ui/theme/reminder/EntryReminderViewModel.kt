@@ -5,10 +5,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.andmar.flint.FlintActions
-import com.andmar.flint.data.DefaultFlintRepository
+import com.andmar.flint.FlintRepository
 
 class EntryReminderViewModel(
-    private val flintRepository: DefaultFlintRepository
+    private val flintRepository: FlintRepository
 ): ViewModel() {
 
     var entryReminderUiState by mutableStateOf(EntryReminderUiState())

@@ -37,6 +37,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -88,8 +89,7 @@ fun HomeScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { onNavEntryNote(homeContentState.value.selectedCategoryDetails.id) },
-                containerColor = MaterialTheme.colorScheme.primary
+                onClick = { onNavEntryNote(homeContentState.value.selectedCategoryDetails.id) }
             ) {
                 Icon(
                     painter = painterResource(R.drawable.add),
@@ -165,6 +165,18 @@ fun HomeBody(
         LazyColumn(
             modifier = Modifier.fillMaxWidth()
         ) {
+            item {
+                if (homeContentState.categories.isEmpty()) {
+                    Text(
+                        text = "Создайте категорию перед тем как создавать заметку",
+                        fontSize = 20.sp,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(20.dp)
+                    )
+                }
+            }
             items(homeContentState.filteredNotes) { noteDetails ->
                 NoteDetailsCard(
                     modifier = Modifier.animateItem(),
@@ -179,12 +191,10 @@ fun HomeBody(
         }
     }
 
-    if (!homeContentState.isAuth) {
-        AuthDialog { onClickSignIn() }
-    }
-
-    if (homeContentState.isLoading) {
-        DefaultLoadingDialog()
+    when(homeContentState.authStateActions) {
+        is AuthStateActions.Loading ->  DefaultLoadingDialog()
+        is AuthStateActions.Authorized -> {}
+        is AuthStateActions.Unauthorized ->  AuthDialog { onClickSignIn() }
     }
 
     if (noteActionsSheetState.isVisible) {
@@ -237,7 +247,7 @@ fun NoteDetailsCard(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            Column {
+            Column(Modifier.weight(1f)) {
                 if (noteDetails.title.isNotEmpty()) {
                     Text(
                         text = noteDetails.title,

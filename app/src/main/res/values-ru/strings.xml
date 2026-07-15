@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Flint</string>
+    <string name="go_back">Вернуться назад</string>
+    <string name="email_label">Email</string>
+    <string name="password_label">Пароль</string>
+    <string name="title_label">Заголовок</string>
+    <string name="text_label">Текст</string>
+    <string name="continue_button">Продолжить</string>
+    <string name="entry_screen_title">Создание</string>
+    <string name="edit_screen_title">Редактирование</string>
+    <string name="category_screen_title">Категории</string>
+    <string name="todo_screen_title">Задачи</string>
+    <string name="entry_category_screen_title">Создайте категорию</string>
+    <string name="edit_category_screen_title">Редактируйте категорию</string>
+    <string name="entry_note_screen_title">Создайте заметки</string>
+    <string name="edit_note_screen_title">Редактируйте заметку</string>
+    <string name="entry_todo_screen_title">Создание задачи</string>
+    <string name="edit_todo_screen_title">"Редактирование задачи "</string>
+    <string name="fix_note_title">Закрепить</string>
+    <string name="unfix_note_title">Открепить</string>
+    <string name="done_note_title">Пометить как выполнено</string>
+    <string name="undone_note_title">Пометить как не выполнено</string>
+    <string name="highlight_note_title">Выделить</string>
+    <string name="unhighlight_note_title">Сделать не выделенным</string>
+    <string name="edit_note_title">Редактировать</string>
+    <string name="delete_note_title">Удалить</string>
+</resources>

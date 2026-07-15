@@ -32,7 +32,7 @@ fun EditNoteScreen(
     Scaffold(
         topBar = {
             DefaultTopAppBar(
-                title = stringResource(R.string.edit_screen_title),
+                title = "",
                 navIcon = R.drawable.arrow_back,
                 navDes = "Go to back",
                 onNavIcon = onNavBack

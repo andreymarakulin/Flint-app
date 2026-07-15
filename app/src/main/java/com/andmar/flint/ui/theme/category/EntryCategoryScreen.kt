@@ -35,7 +35,7 @@ fun EntryCategoryScreen(
     Scaffold(
         topBar = {
             DefaultTopAppBar(
-                title = stringResource(R.string.entry_category_screen_title),
+                title = "",
                 navIcon = R.drawable.arrow_back,
                 navDes = "",
                 onNavIcon = onNavBack

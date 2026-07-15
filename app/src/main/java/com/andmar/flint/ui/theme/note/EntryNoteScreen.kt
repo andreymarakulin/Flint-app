@@ -37,7 +37,7 @@ fun EntryNoteScreen(
     Scaffold(
         topBar = {
             DefaultTopAppBar(
-                title = stringResource(R.string.entry_screen_title),
+                title = "",
                 navIcon = R.drawable.arrow_back,
                 navDes = "Go to back",
                 onNavIcon = onNavBack

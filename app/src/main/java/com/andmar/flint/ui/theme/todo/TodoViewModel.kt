@@ -6,23 +6,20 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.andmar.flint.FlintActions
-import com.andmar.flint.data.DefaultFlintRepository
+import com.andmar.flint.FlintRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 
 class TodoViewModel(
-    private val flintRepository: DefaultFlintRepository
+    private val flintRepository: FlintRepository
 ): ViewModel() {
 
     val todoDetailsState: StateFlow<TodoDetailsState> =
         flintRepository.getTodos().map { todoItems ->
-            TodoDetailsState(
-                todoItems.sortedByDescending { it.fix }.map { todoItem ->
-                    todoItem.toTodoDetails()
-                }
-            )
+            TodoDetailsState(todoItems.sortedByDescending { it.fix })
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(),
@@ -55,37 +52,67 @@ class TodoViewModel(
     private fun fixTodo() {
         val todoDetails = todoUiState.selectedTodoDetails
 
-        flintRepository.editTodo(
-            todoItem = todoDetails.copy(
-                fix = !todoDetails.fix
-            ).toTodoItem()
-        ) { updateFlintActions(it) }
+        viewModelScope.launch {
+            updateFlintActions(FlintActions.Loading)
+            try {
+                flintRepository.editTodo(
+                    todoDetails.copy(
+                        fix = !todoDetails.fix
+                    )
+                )
+                updateFlintActions(FlintActions.Success)
+            } catch (e: Exception) {
+                updateFlintActions(FlintActions.Error(e.message ?: "Error"))
+            }
+        }
     }
 
     private fun doneTodo() {
         val todoDetails = todoUiState.selectedTodoDetails
 
-        flintRepository.editTodo(
-            todoItem = todoDetails.copy(
-                done = !todoDetails.done
-            ).toTodoItem()
-        ) { updateFlintActions(it) }
+        viewModelScope.launch {
+            updateFlintActions(FlintActions.Loading)
+            try {
+                flintRepository.editTodo(
+                    todoDetails.copy(
+                        done = !todoDetails.done
+                    )
+                )
+                updateFlintActions(FlintActions.Success)
+            } catch (e: Exception) {
+                updateFlintActions(FlintActions.Error(e.message ?: "Error"))
+            }
+        }
     }
 
     private fun highlightTodo() {
         val todoDetails = todoUiState.selectedTodoDetails
 
-        flintRepository.editTodo(
-            todoItem = todoDetails.copy(
-                highlight = !todoDetails.highlight
-            ).toTodoItem()
-        ) { updateFlintActions(it) }
+        viewModelScope.launch {
+            updateFlintActions(FlintActions.Loading)
+            try {
+                flintRepository.editTodo(
+                    todoDetails.copy(
+                        highlight = !todoDetails.highlight
+                    )
+                )
+                updateFlintActions(FlintActions.Success)
+            } catch (e: Exception) {
+                updateFlintActions(FlintActions.Error(e.message ?: "Error"))
+            }
+        }
     }
 
     private fun deleteTodo() {
-        flintRepository.deleteTodo(
-            todoItem = todoUiState.selectedTodoDetails.toTodoItem()
-        ) { updateFlintActions(it) }
+        viewModelScope.launch {
+            updateFlintActions(FlintActions.Loading)
+            try {
+                flintRepository.deleteTodo(todoUiState.selectedTodoDetails)
+                updateFlintActions(FlintActions.Success)
+            } catch (e: Exception) {
+                updateFlintActions(FlintActions.Error(e.message ?: "Error"))
+            }
+        }
     }
 }
 

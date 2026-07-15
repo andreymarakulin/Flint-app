@@ -5,13 +5,14 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.andmar.flint.FlintActions
-import com.andmar.flint.data.DefaultFlintRepository
-import com.andmar.flint.firebase.TodoItem
+import com.andmar.flint.FlintRepository
+import kotlinx.coroutines.launch
 
 class EntryTodoViewModel(
-    private val flintRepository: DefaultFlintRepository,
+    private val flintRepository: FlintRepository,
     savedStateHandle: SavedStateHandle
 ): ViewModel() {
 
@@ -26,6 +27,7 @@ class EntryTodoViewModel(
                 updateTodoDetails(entryTodoActions.todoDetails)
             }
             is EntryTodoActions.CreateTodo -> {createTodo() }
+            is EntryTodoActions.DismissError -> updateFlintActions(FlintActions.Default)
         }
     }
 
@@ -37,25 +39,37 @@ class EntryTodoViewModel(
     }
 
     private fun updateFlintActions(flintActions: FlintActions) {
-
+        entryTodoUiState = entryTodoUiState.copy(
+            flintActions = flintActions
+        )
     }
 
     private fun createTodo() {
-        flintRepository.createTodo(
-            todoItem = entryTodoUiState.todoDetails
-                .copy(noteId = noteId).toTodoItem()
-        ) { updateFlintActions(it) }
+        viewModelScope.launch {
+            updateFlintActions(FlintActions.Loading)
+            try {
+                flintRepository.createTodo(
+                    entryTodoUiState.todoDetails
+                        .copy(noteId = noteId)
+                )
+                updateFlintActions(FlintActions.Success)
+            } catch (e: Exception) {
+                updateFlintActions(FlintActions.Error(e.message ?: "Error"))
+            }
+        }
     }
 }
 
 data class EntryTodoUiState(
     val todoDetails: TodoDetails = TodoDetails(),
+    val flintActions: FlintActions = FlintActions.Default,
     val isAction: Boolean = false
 )
 
 sealed interface EntryTodoActions {
     data class UpdateTodoDetails(val todoDetails: TodoDetails): EntryTodoActions
     object CreateTodo: EntryTodoActions
+    object DismissError: EntryTodoActions
 }
 
 data class TodoDetails(
@@ -70,28 +84,5 @@ data class TodoDetails(
 )
 
 fun isTodoAction(todoDetails: TodoDetails): Boolean {
-    return todoDetails.text.isNotBlank()
+    return todoDetails.title.isNotBlank() || todoDetails.text.isNotBlank()
 }
-
-fun TodoDetails.toTodoItem(): TodoItem = TodoItem(
-    id = id,
-    noteId = noteId,
-    title = title,
-    text = text,
-    fix = fix,
-    done = done,
-    highlight = highlight,
-    updateTime = System.currentTimeMillis()
-)
-
-
-fun TodoItem.toTodoDetails(): TodoDetails = TodoDetails(
-    id = id,
-    noteId = noteId,
-    title = title,
-    text = text,
-    fix = fix,
-    done = done,
-    highlight = highlight,
-    updateTime = updateTime
-)

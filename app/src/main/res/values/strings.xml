@@ -59,5 +59,6 @@
     <string name="unhighlight_note_title">Unhighlight</string>
     <string name="edit_note_title">Edit</string>
     <string name="delete_note_title">Delete</string>
+    <string name="ru">string</string>
 
 </resources>

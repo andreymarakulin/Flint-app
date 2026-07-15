@@ -5,16 +5,15 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelStore
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.andmar.flint.FlintActions
-import com.andmar.flint.data.DefaultFlintRepository
+import com.andmar.flint.FlintRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class EditTodoViewModel(
-    private val flintRepository: DefaultFlintRepository,
+    private val flintRepository: FlintRepository,
     savedStateHandle: SavedStateHandle
 ): ViewModel() {
 
@@ -28,7 +27,6 @@ class EditTodoViewModel(
             editTodoUiState = EditTodoUiState(
                 todoDetails = flintRepository.getTodoById(todoId)
                     .first()
-                    .toTodoDetails()
             )
         }
     }
@@ -39,6 +37,7 @@ class EditTodoViewModel(
                 updateTodoDetails(editTodoActions.todoDetails)
             }
             is EditTodoActions.EditTodo -> { editTodo() }
+            is EditTodoActions.DismissError -> updateFlintActions(FlintActions.Default)
         }
     }
 
@@ -50,22 +49,34 @@ class EditTodoViewModel(
     }
 
     private fun updateFlintActions(flintActions: FlintActions) {
-
+        editTodoUiState = editTodoUiState.copy(
+            flintActions = flintActions
+        )
     }
 
     private fun editTodo() {
-        flintRepository.editTodo(
-            todoItem = editTodoUiState.todoDetails.toTodoItem()
-        ) { updateFlintActions(it) }
+        viewModelScope.launch {
+            updateFlintActions(FlintActions.Loading)
+            try {
+                flintRepository.editTodo(
+                    editTodoUiState.todoDetails
+                )
+                updateFlintActions(FlintActions.Success)
+            } catch (e: Exception) {
+                updateFlintActions(FlintActions.Error(e.message ?: "Error"))
+            }
+        }
     }
 }
 
 data class EditTodoUiState(
     val todoDetails: TodoDetails = TodoDetails(),
+    val flintActions: FlintActions = FlintActions.Default,
     val isAction: Boolean = false
 )
 
 sealed interface EditTodoActions {
     data class UpdateTodoDetails(val todoDetails: TodoDetails): EditTodoActions
     object EditTodo: EditTodoActions
+    object DismissError: EditTodoActions
 }

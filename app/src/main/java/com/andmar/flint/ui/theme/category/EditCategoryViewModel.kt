@@ -8,12 +8,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
 import com.andmar.flint.FlintActions
-import com.andmar.flint.data.DefaultFlintRepository
+import com.andmar.flint.FlintRepository
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 class EditCategoryViewModel(
-    private val flintRepository: DefaultFlintRepository,
+    private val flintRepository: FlintRepository,
     savedStateHandle: SavedStateHandle
 ): ViewModel() {
 
@@ -26,7 +26,6 @@ class EditCategoryViewModel(
             editCategoryUiState = EditCategoryUiState(
                 categoryDetails = flintRepository.getCategoryById(categoryId)
                     .first()
-                    .toCategoryDetails()
             )
         }
     }
@@ -57,9 +56,15 @@ class EditCategoryViewModel(
     }
 
     private fun editCategory() {
-        flintRepository.editCategory(
-            categoryItem = editCategoryUiState.categoryDetails.toCategoryItem()
-        ) { updateFlintActions(it) }
+        viewModelScope.launch {
+            updateFlintActions(FlintActions.Loading)
+            try {
+                flintRepository.editCategory(editCategoryUiState.categoryDetails)
+                updateFlintActions(FlintActions.Success)
+            } catch (e: Exception) {
+                updateFlintActions(FlintActions.Error(e.message ?: "Error"))
+            }
+        }
     }
 }
 

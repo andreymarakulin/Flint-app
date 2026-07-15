@@ -10,9 +10,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.andmar.flint.DefaultButton
+import com.andmar.flint.DefaultLoadingDialog
 import com.andmar.flint.DefaultScreenText
 import com.andmar.flint.DefaultTextField
 import com.andmar.flint.DefaultTopAppBar
+import com.andmar.flint.ErrorDialog
+import com.andmar.flint.FlintActions
 import com.andmar.flint.FlintViewModelProvider
 import com.andmar.flint.R
 import kotlinx.serialization.Serializable
@@ -29,7 +32,7 @@ fun EntryTodoScreen(
     Scaffold(
         topBar = {
             DefaultTopAppBar(
-                title = stringResource(R.string.entry_screen_title),
+                title = "",
                 navIcon = R.drawable.arrow_back,
                 navDes = null,
                 onNavIcon = onNavBack
@@ -38,7 +41,8 @@ fun EntryTodoScreen(
     ) { innerPadding ->
         EntryTodoBody(
             innerPaddingValues = innerPadding,
-            entryTodoUiState = viewModel.entryTodoUiState
+            entryTodoUiState = viewModel.entryTodoUiState,
+            onSuccess = onNavBack
         ) { viewModel.onActions(it) }
     }
 }
@@ -47,6 +51,7 @@ fun EntryTodoScreen(
 fun EntryTodoBody(
     innerPaddingValues: PaddingValues,
     entryTodoUiState: EntryTodoUiState,
+    onSuccess: () -> Unit,
     onActions: (EntryTodoActions) -> Unit
 ) {
     Column(
@@ -62,6 +67,17 @@ fun EntryTodoBody(
             title = stringResource(R.string.continue_button),
             enabled = entryTodoUiState.isAction
         ) { onActions(EntryTodoActions.CreateTodo) }
+    }
+
+    when(entryTodoUiState.flintActions) {
+        is FlintActions.Default -> {}
+        is FlintActions.Success -> onSuccess()
+        is FlintActions.Loading -> DefaultLoadingDialog()
+        is FlintActions.Error -> {
+            ErrorDialog(
+                message = entryTodoUiState.flintActions.message
+            ) { onActions(EntryTodoActions.DismissError) }
+        }
     }
 }
 

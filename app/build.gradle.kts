@@ -1,10 +1,9 @@
-import org.gradle.kotlin.dsl.implementation
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.google.services)
+    alias(libs.plugins.google.ksp)
 }
 
 android {
@@ -31,11 +30,6 @@ android {
                 "proguard-rules.pro"
             )
         }
-        create("rustoreRelease") {
-            applicationIdSuffix = "rustore"
-            versionNameSuffix = "rustore"
-            renderscriptOptimLevel = 3
-        }
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
@@ -44,16 +38,41 @@ android {
     buildFeatures {
         compose = true
     }
-    flavorDimensions += listOf("rustore")
+    flavorDimensions += listOf("data")
+    productFlavors {
+        create("firebase") {
+            dimension = "data"
+        }
+        create("room") {
+            dimension = "data"
+            applicationIdSuffix = ".rustore"
+            versionNameSuffix = "-rustore"
+        }
+    }
+    tasks.configureEach {
+        // Если имя текущей задачи сборки содержит "room" и относится к Google Services, отключаем её
+        if (name.contains("room", ignoreCase = true) && name.contains("GoogleServices", ignoreCase = true)) {
+            enabled = false
+        }
+    }
+
 }
 
 dependencies {
-    implementation(platform(libs.firebase.bom))
+    "roomImplementation"(libs.androidx.room.runtime)
+    "kspRoom"(libs.androidx.room.compiler)
+    "roomImplementation"(libs.androidx.room.ktx)
+
+    "firebaseImplementation"(platform(libs.firebase.bom))
+    "firebaseImplementation"(libs.firebase.analytics)
+    "firebaseImplementation"(libs.firebase.auth)
+    "firebaseImplementation"(libs.firebase.firestore)
+
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.okhttp)
+
     implementation(libs.androidx.material3)
     implementation(libs.androidx.ui)
-    implementation(libs.firebase.analytics)
-    implementation(libs.firebase.auth)
-    implementation(libs.firebase.firestore)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
     implementation(platform(libs.androidx.compose.bom))

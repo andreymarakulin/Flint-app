@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -31,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil3.compose.AsyncImage
 import com.andmar.flint.DefaultLoadingDialog
 import com.andmar.flint.DefaultTopAppBar
 import com.andmar.flint.ErrorDialog
@@ -66,7 +68,7 @@ fun DetailsScreen(
     Scaffold(
         topBar = {
             DefaultTopAppBar(
-                title = "Details",
+                title = "Заметка",
                 navIcon = R.drawable.arrow_back,
                 navDes = "back",
                 onNavIcon = onNavBack,
@@ -77,8 +79,7 @@ fun DetailsScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { onNavEntryTodo(noteDetailsState.value.noteDetails.id) },
-                containerColor = MaterialTheme.colorScheme.primary
+                onClick = { onNavEntryTodo(noteDetailsState.value.noteDetails.id) }
             ) {
                 Icon(
                     painter = painterResource(R.drawable.add),
@@ -95,7 +96,7 @@ fun DetailsScreen(
             noteActionsSheetState = noteActionsSheetState,
             scope = scope,
             onClickEditNote = { onNavEditNote(it) },
-            onClickEditTodo = {}
+            onClickEditTodo = { onNavEditTodo(viewModel.detailsUiState.selectedTodoDetails.id) },
         ) { viewModel.onActions(it) }
     }
 }
@@ -119,7 +120,6 @@ fun DetailsBody(
             .fillMaxSize()
             .padding(innerPaddingValues)
     ) {
-
         item {
             Card(
                 shape = RoundedCornerShape(20.dp),
@@ -134,29 +134,33 @@ fun DetailsBody(
                         } else Color.Transparent
                     )
             ) {
-                Text(
-                    text = noteDetailsState.noteDetails.title,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.Bold,
-                    overflow = TextOverflow.Ellipsis,
-                    textDecoration = if (noteDetailsState.noteDetails.done) {
-                        TextDecoration.LineThrough
-                    } else TextDecoration.None,
-                    modifier = Modifier
-                        .padding(horizontal = 10.dp)
-                        .padding(vertical = 5.dp)
-                )
-                Text(
-                    text = noteDetailsState.noteDetails.text,
-                    fontSize = 13.sp,
-                    overflow = TextOverflow.Ellipsis,
-                    textDecoration = if (noteDetailsState.noteDetails.done) {
-                        TextDecoration.LineThrough
-                    } else TextDecoration.None,
-                    modifier = Modifier
-                        .padding(horizontal = 10.dp)
-                        .padding(bottom = 5.dp)
-                )
+                if (noteDetailsState.noteDetails.title.isNotEmpty()) {
+                    Text(
+                        text = noteDetailsState.noteDetails.title,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        overflow = TextOverflow.Ellipsis,
+                        textDecoration = if (noteDetailsState.noteDetails.done) {
+                            TextDecoration.LineThrough
+                        } else TextDecoration.None,
+                        modifier = Modifier
+                            .padding(horizontal = 10.dp)
+                            .padding(vertical = 5.dp)
+                    )
+                }
+                if (noteDetailsState.noteDetails.text.isNotEmpty()) {
+                    Text(
+                        text = noteDetailsState.noteDetails.text,
+                        fontSize = 13.sp,
+                        overflow = TextOverflow.Ellipsis,
+                        textDecoration = if (noteDetailsState.noteDetails.done) {
+                            TextDecoration.LineThrough
+                        } else TextDecoration.None,
+                        modifier = Modifier
+                            .padding(horizontal = 10.dp)
+                            .padding(bottom = 5.dp)
+                    )
+                }
                 if (noteDetailsState.noteDetails.fix) {
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
@@ -181,7 +185,8 @@ fun DetailsBody(
                     text = "Задачи",
                     fontSize = 23.sp,
                     fontWeight = FontWeight.Bold,
-                    modifier = Modifier.padding(20.dp)
+                    modifier = Modifier
+                        .padding(top = 20.dp, start = 10.dp, bottom = 10.dp)
                 )
             }
         }
