@@ -4,7 +4,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -12,6 +15,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.andmar.flint.DefaultButton
 import com.andmar.flint.DefaultLoadingDialog
 import com.andmar.flint.DefaultScreenText
+import com.andmar.flint.DefaultSheetItem
 import com.andmar.flint.DefaultTextField
 import com.andmar.flint.DefaultTopAppBar
 import com.andmar.flint.ErrorDialog
@@ -95,5 +99,64 @@ fun CategoryDetailsForm(
             maxLiens = 1,
             label = stringResource(R.string.title_label),
         ) { updateCategoryDetails(categoryDetails.copy(title = it)) }
+    }
+}
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CategoryActionsSheet(
+    sheetState: SheetState,
+    categoryDetails: CategoryDetails,
+    onFix: () -> Unit,
+    onHighlight: () -> Unit,
+    onEdit: () -> Unit,
+    onDelete: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    ModalBottomSheet(
+        sheetState = sheetState,
+        onDismissRequest = { onDismiss() }
+    ) {
+        DefaultSheetItem(
+            title = if (categoryDetails.fix) {
+                R.string.unfix_note_title
+            } else R.string.fix_note_title,
+            icon = if (categoryDetails.fix) {
+                R.drawable.keep_off
+            } else R.drawable.keep,
+            desc = null
+        ) {
+            onFix()
+            onDismiss()
+        }
+        DefaultSheetItem(
+            title = if (categoryDetails.highlight) {
+                R.string.unhighlight_note_title
+            } else R.string.highlight_note_title,
+            icon = if (categoryDetails.highlight) {
+                R.drawable.heart_broken
+            } else R.drawable.favorite,
+            desc = null
+        ) {
+            onHighlight()
+            onDismiss()
+        }
+        DefaultSheetItem(
+            title = R.string.edit_note_title,
+            icon = R.drawable.edit,
+            desc = null
+        ) {
+            onEdit()
+            onDismiss()
+        }
+        DefaultSheetItem(
+            title = R.string.delete_note_title,
+            icon = R.drawable.delete,
+            desc = null
+        ) {
+            onDelete()
+            onDismiss()
+        }
     }
 }

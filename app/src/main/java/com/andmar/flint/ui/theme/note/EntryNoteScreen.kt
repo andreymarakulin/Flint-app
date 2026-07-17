@@ -110,6 +110,7 @@ fun NoteDetailsForm(
 @Composable
 fun NoteActionsSheet(
     sheetState: SheetState,
+    noteDetails: NoteDetails,
     onFix: () -> Unit,
     onDone: () -> Unit,
     onHighlight: () -> Unit,
@@ -122,24 +123,36 @@ fun NoteActionsSheet(
         onDismissRequest = { onDismiss() }
     ) {
         DefaultSheetItem(
-            title = R.string.fix_note_title,
-            icon = R.drawable.keep,
+            title = if (noteDetails.fix) {
+                R.string.unfix_note_title
+            } else R.string.fix_note_title,
+            icon = if (noteDetails.fix) {
+                R.drawable.keep_off
+            } else R.drawable.keep,
             desc = null
         ) {
             onFix()
             onDismiss()
         }
         DefaultSheetItem(
-            title = R.string.done_note_title,
-            icon = R.drawable.done_outline,
+            title = if (noteDetails.done) {
+                R.string.undone_note_title
+            } else R.string.done_note_title,
+            icon = if (noteDetails.done) {
+                R.drawable.remove_done
+            } else R.drawable.done_all,
             desc = null
         ) {
             onDone()
             onDismiss()
         }
         DefaultSheetItem(
-            title = R.string.highlight_note_title,
-            icon = R.drawable.favorite,
+            title = if (noteDetails.highlight) {
+                R.string.unhighlight_note_title
+            } else R.string.highlight_note_title,
+            icon = if (noteDetails.highlight) {
+                R.drawable.heart_broken
+            } else R.drawable.favorite,
             desc = null
         ) {
             onHighlight()

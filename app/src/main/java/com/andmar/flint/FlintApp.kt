@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.input.InputTransformation
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -41,7 +42,7 @@ fun FlintApp() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DefaultTopAppBar(
-    title: String,
+    title: String = "",
     navIcon: Int? = null,
     navDes: String? = null,
     onNavIcon: () -> Unit = {},
@@ -50,7 +51,12 @@ fun DefaultTopAppBar(
     onActions: () -> Unit = {}
 ) {
     CenterAlignedTopAppBar(
-        title = { Text(title) },
+        title = {
+            Text(
+                text = title,
+                fontWeight = FontWeight.ExtraBold
+            )
+        },
         navigationIcon = {
             if (navIcon != null) {
                 IconButton(
@@ -83,6 +89,7 @@ fun DefaultTextField(
         shape = RoundedCornerShape(20.dp),
         keyboardOptions = keyboardOptions,
         onValueChange = { onValueChange(it) },
+        //inputTransformation = InputTransformation.maxLengthInChars(maxChar)
         label = { Text(label) },
         modifier = Modifier
             .fillMaxWidth()

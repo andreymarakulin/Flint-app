@@ -34,7 +34,7 @@ class HomeViewModel(
     val categoryDetailsState: StateFlow<CategoryDetailsState> =
         flintRepository.getCategories().map { categoryItems ->
             CategoryDetailsState(
-                categoryItems.sortedByDescending { it.fix }
+                categoryItems.sortedByDescending { it.updateTime }.sortedByDescending { it.fix }
             )
         }.stateIn(
             scope = viewModelScope,
@@ -46,7 +46,7 @@ class HomeViewModel(
         flintRepository.getNotes().map { noteItems ->
             Log.i("tst", noteItems.toString())
             NoteDetailsState(
-                noteItems.sortedByDescending { it.fix }
+                noteItems.sortedByDescending { it.updateTime }.sortedByDescending { it.fix }
             )
         }.stateIn(
             scope = viewModelScope,

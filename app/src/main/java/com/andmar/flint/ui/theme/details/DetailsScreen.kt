@@ -200,11 +200,22 @@ fun DetailsBody(
                 scope.launch { todoActionsSheetState.show() }
             }
         }
+        item {
+            Text(
+                text = "Нажмине на плюсик, чтобы добавить задачу",
+                fontSize = 20.sp,
+                modifier = Modifier
+                    .fillMaxWidth(0.8f)
+                    .padding(10.dp)
+                    .padding(top = 20.dp)
+            )
+        }
     }
 
     if (noteActionsSheetState.isVisible) {
         NoteActionsSheet(
             sheetState = noteActionsSheetState,
+            noteDetails = noteDetailsState.noteDetails,
             onFix = { onActions(DetailsActions.FixNote) },
             onDone = { onActions(DetailsActions.DoneNote) },
             onHighlight = { onActions(DetailsActions.HighlightNote) },
@@ -216,6 +227,7 @@ fun DetailsBody(
     if (todoActionsSheetState.isVisible) {
         TodoActionsSheet(
             sheetState = todoActionsSheetState,
+            todoDetails = detailsUiState.selectedTodoDetails,
             onFix = { onActions(DetailsActions.FixTodo) },
             onDone = { onActions(DetailsActions.DoneTodo) },
             onHighlight = { onActions(DetailsActions.HighlightTodo) },

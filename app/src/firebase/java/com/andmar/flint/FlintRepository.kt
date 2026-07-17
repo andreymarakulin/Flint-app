@@ -35,7 +35,7 @@ class FlintRepository(
     //User
     suspend fun createUser(userItem: UserItem) = firestoreClient.setUserItem(userItem)
     //Category
-    suspend fun createCategory(categoryDetails: CategoryDetails) = firestoreClient.addCategoryItem(categoryDetails.toCategoryItem())
+    suspend fun createCategory(categoryDetails: CategoryDetails) = firestoreClient.addCategoryItem(categoryDetails.toCreateCategoryItem())
     suspend fun editCategory(categoryDetails: CategoryDetails) = firestoreClient.setCategoryItem(categoryDetails.toCategoryItem())
     suspend fun deleteCategory(categoryDetails: CategoryDetails) = firestoreClient.deleteCategoryItem(categoryDetails.id)
     fun getCategoryById(categoryId: String): Flow<CategoryDetails> =
@@ -45,7 +45,7 @@ class FlintRepository(
             categoryItems.map { categoryItem -> categoryItem.toCategoryDetails() }
         }
     //Note
-    suspend fun createNote(noteDetails: NoteDetails) = firestoreClient.addNoteItem(noteDetails.toNoteItem())
+    suspend fun createNote(noteDetails: NoteDetails) = firestoreClient.addNoteItem(noteDetails.toCreateNoteItem())
     suspend fun editNote(noteDetails: NoteDetails) = firestoreClient.setNoteItem(noteDetails.toNoteItem())
     suspend fun deleteNote(noteDetails: NoteDetails) = firestoreClient.deleteNoteItem(noteDetails.id)
     fun getNoteById(noteId: String): Flow<NoteDetails> =
@@ -57,7 +57,7 @@ class FlintRepository(
         }
 
     //Todo
-    suspend fun createTodo(todoDetails: TodoDetails) = firestoreClient.addTodoItem(todoDetails.toTodoItem())
+    suspend fun createTodo(todoDetails: TodoDetails) = firestoreClient.addTodoItem(todoDetails.toCreateTodoItem())
     suspend fun editTodo(todoDetails: TodoDetails) = firestoreClient.setTodoItem(todoDetails.toTodoItem())
     suspend fun deleteTodo(todoDetails: TodoDetails) = firestoreClient.deleteTodoItem(todoDetails.id)
     fun getTodoById(todoId: String): Flow<TodoDetails> =

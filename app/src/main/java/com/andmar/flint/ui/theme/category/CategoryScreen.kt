@@ -2,7 +2,6 @@ package com.andmar.flint.ui.theme.category
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -17,7 +16,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
@@ -27,18 +25,15 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.andmar.flint.DefaultLoadingDialog
-import com.andmar.flint.DefaultSheetItem
 import com.andmar.flint.DefaultTopAppBar
 import com.andmar.flint.ErrorDialog
 import com.andmar.flint.FlintActions
@@ -118,11 +113,22 @@ fun CategoryBody(
                 scope.launch { categoryActionsSheetState.show() }
             }
         }
+        item {
+            Text(
+                text = "Нажмине на плюсик, чтобы добавить категорию",
+                fontSize = 20.sp,
+                modifier = Modifier
+                    .fillMaxWidth(0.8f)
+                    .padding(10.dp)
+                    .padding(top = 20.dp)
+            )
+        }
     }
 
     if (categoryActionsSheetState.isVisible) {
         CategoryActionsSheet(
             sheetState = categoryActionsSheetState,
+            categoryDetails = categoryUiState.selectedCategoryDetails,
             onFix = { onActions(CategoryActions.FixCategory) },
             onHighlight = { onActions(CategoryActions.HighlightCategory) },
             onEdit = { onClickEditCategory(categoryUiState.selectedCategoryDetails.id) },
@@ -176,6 +182,7 @@ fun CategoryDetailsCard(
                 modifier = Modifier
                     .padding(horizontal = 10.dp)
                     .padding(vertical = 5.dp)
+                    .weight(1f)
             )
             Row(verticalAlignment = Alignment.CenterVertically) {
                 if (categoryDetails.fix) {
@@ -195,56 +202,6 @@ fun CategoryDetailsCard(
                     )
                 }
             }
-        }
-    }
-}
-
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun CategoryActionsSheet(
-    sheetState: SheetState,
-    onFix: () -> Unit,
-    onHighlight: () -> Unit,
-    onEdit: () -> Unit,
-    onDelete: () -> Unit,
-    onDismiss: () -> Unit
-) {
-    ModalBottomSheet(
-        sheetState = sheetState,
-        onDismissRequest = { onDismiss() }
-    ) {
-        DefaultSheetItem(
-            title = R.string.fix_note_title,
-            icon = R.drawable.keep,
-            desc = null
-        ) {
-            onFix()
-            onDismiss()
-        }
-        DefaultSheetItem(
-            title = R.string.highlight_note_title,
-            icon = R.drawable.favorite,
-            desc = null
-        ) {
-            onHighlight()
-            onDismiss()
-        }
-        DefaultSheetItem(
-            title = R.string.edit_note_title,
-            icon = R.drawable.edit,
-            desc = null
-        ) {
-            onEdit()
-            onDismiss()
-        }
-        DefaultSheetItem(
-            title = R.string.delete_note_title,
-            icon = R.drawable.delete,
-            desc = null
-        ) {
-            onDelete()
-            onDismiss()
         }
     }
 }

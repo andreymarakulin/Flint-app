@@ -1,11 +1,19 @@
 package com.andmar.flint
 
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.andmar.flint.ui.theme.about.AboutScreen
+import com.andmar.flint.ui.theme.about.AboutScreenRoute
 import com.andmar.flint.ui.theme.account.AccountScreen
 import com.andmar.flint.ui.theme.account.AccountScreenRoute
 import com.andmar.flint.ui.theme.account.SignInScreen
@@ -54,7 +62,34 @@ fun NavigationClient(
 
     NavHost(
         navController = navController,
-        startDestination = HomeScreenRoute
+        startDestination = HomeScreenRoute,
+        enterTransition = {
+            slideInHorizontally(
+                animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing),
+                initialOffsetX = { it } // появление из-за правой границы экрана
+            ) + fadeIn(animationSpec = tween(400))
+        },
+        // 2. Анимация исчезновения старого экрана (уходит влево)
+        exitTransition = {
+            slideOutHorizontally(
+                animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing),
+                targetOffsetX = { -it / 3 } // Уходит влево только на 1/3 экрана (эффект параллакса)
+            ) + fadeOut(animationSpec = tween(400))
+        },
+        // 3. Анимация появления предыдущего экрана при нажатии "Назад" (выезжает слева)
+        popEnterTransition = {
+            slideInHorizontally(
+                animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing),
+                initialOffsetX = { -it / 3 }
+            ) + fadeIn(animationSpec = tween(400))
+        },
+        // 4. Анимация исчезновения текущего экрана при нажатии "Назад" (уходит вправо)
+        popExitTransition = {
+            slideOutHorizontally(
+                animationSpec = tween(durationMillis = 400, easing = FastOutSlowInEasing),
+                targetOffsetX = { it }
+            ) + fadeOut(animationSpec = tween(400))
+        }
     ) {
 
         composable<HomeScreenRoute> {
@@ -65,7 +100,8 @@ fun NavigationClient(
                 onNavEntryCategory = { navController.navigate(EntryCategoryScreenRoute) },
                 onNavEntryNote = { navController.navigate(EntryNoteScreenRoute(it)) },
                 onNavEditNote = { navController.navigate(EditNoteScreenRoute(it)) },
-                onNavTodo = { navController.navigate(TodoScreenRoute) }
+                onNavTodo = { navController.navigate(TodoScreenRoute) },
+                onNavAbout = { navController.navigate(AboutScreenRoute) }
             )
         }
         //Category
@@ -99,7 +135,7 @@ fun NavigationClient(
         //Todo
         composable<TodoScreenRoute> {
             TodoScreen(
-                onNavEntryTodo = { navController.navigate(EntryTodoScreenRoute) },
+                onNavEntryTodo = { navController.navigate(EntryTodoScreenRoute(it)) },
                 onNavEditTodo = { navController.navigate(EditTodoScreenRoute(it)) }
             ) {  navController.navigateUp() }
         }
@@ -129,6 +165,11 @@ fun NavigationClient(
         }
         composable<EditReminderScreenRoute> {
             EditReminderScreen() { navController.navigateUp() }
+        }
+
+        //About
+        composable<AboutScreenRoute> {
+            AboutScreen() { navController.navigateUp() }
         }
 
         //Account

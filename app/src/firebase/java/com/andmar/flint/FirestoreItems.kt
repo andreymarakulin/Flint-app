@@ -74,15 +74,12 @@ fun AuthItem.toAuthDetails(): AuthDetails = AuthDetails(
     password = password
 )
 
-
-fun CategoryItem.toCategoryDetails(): CategoryDetails = CategoryDetails(
-    id = id,
+fun CategoryDetails.toCreateCategoryItem(): CategoryItem = CategoryItem(
     title = title,
     fix = fix,
     highlight = highlight,
-    updateTime = updateTime
+    updateTime = System.currentTimeMillis()
 )
-
 
 fun CategoryDetails.toCategoryItem(): CategoryItem = CategoryItem(
     id = id,
@@ -92,7 +89,23 @@ fun CategoryDetails.toCategoryItem(): CategoryItem = CategoryItem(
     updateTime = System.currentTimeMillis()
 )
 
+fun CategoryItem.toCategoryDetails(): CategoryDetails = CategoryDetails(
+    id = id,
+    title = title,
+    fix = fix,
+    highlight = highlight,
+    updateTime = updateTime
+)
 
+fun NoteDetails.toCreateNoteItem(): NoteItem = NoteItem(
+    categoryId = categoryId,
+    title = title,
+    text = text,
+    fix = fix,
+    done = done,
+    highlight = highlight,
+    updateTime = System.currentTimeMillis()
+)
 fun NoteDetails.toNoteItem(): NoteItem = NoteItem(
     id = id,
     categoryId = categoryId,
@@ -115,6 +128,15 @@ fun NoteItem.toNoteDetails(): NoteDetails = NoteDetails(
     updateTime = updateTime
 )
 
+fun TodoDetails.toCreateTodoItem(): TodoItem = TodoItem(
+    noteId = noteId,
+    title = title,
+    text = text,
+    fix = fix,
+    done = done,
+    highlight = highlight,
+    updateTime = System.currentTimeMillis()
+)
 
 fun TodoDetails.toTodoItem(): TodoItem = TodoItem(
     id = id,
@@ -138,20 +160,18 @@ fun TodoItem.toTodoDetails(): TodoDetails = TodoDetails(
     highlight = highlight,
     updateTime = updateTime
 )
+fun LabelDetails.toLabelItem(): LabelItem = LabelItem(
+
+)
 
 fun LabelItem.toLabelDetails(): LabelDetails = LabelDetails(
     id = id
 )
 
+fun ReminderDetails.toReminderItem(): ReminderItem = ReminderItem(
 
-fun LabelDetails.toLabelItem(): LabelItem = LabelItem(
-    id = id
 )
 
 fun ReminderItem.toReminderDetails(): ReminderDetails = ReminderDetails(
-    id = id
-)
-
-fun ReminderDetails.toReminderItem(): ReminderItem = ReminderItem(
     id = id
 )

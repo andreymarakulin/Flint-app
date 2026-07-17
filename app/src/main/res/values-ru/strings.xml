@@ -11,6 +11,7 @@
     <string name="edit_screen_title">Редактирование</string>
     <string name="category_screen_title">Категории</string>
     <string name="todo_screen_title">Задачи</string>
+    <string name="about_screen_title">О приложении</string>
     <string name="entry_category_screen_title">Создайте категорию</string>
     <string name="edit_category_screen_title">Редактируйте категорию</string>
     <string name="entry_note_screen_title">Создайте заметки</string>

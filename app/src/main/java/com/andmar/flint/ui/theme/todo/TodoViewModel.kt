@@ -19,7 +19,7 @@ class TodoViewModel(
 
     val todoDetailsState: StateFlow<TodoDetailsState> =
         flintRepository.getTodos().map { todoItems ->
-            TodoDetailsState(todoItems.sortedByDescending { it.fix })
+            TodoDetailsState(todoItems.sortedByDescending { it.updateTime }.sortedByDescending { it.fix })
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(),

@@ -22,6 +22,7 @@
     <string name="edit_screen_title">Edit</string>
     <string name="category_screen_title">Category</string>
     <string name="todo_screen_title">Todo</string>
+    <string name="about_screen_title">About app</string>
 
 
     <string name="sign_in_screen_text">Sign in ANDMAR id</string>

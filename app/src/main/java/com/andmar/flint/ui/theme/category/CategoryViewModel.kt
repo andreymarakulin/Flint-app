@@ -21,7 +21,7 @@ class CategoryViewModel(
     val categoryDetailsState: StateFlow<CategoryDetailsState> =
         flintRepository.getCategories().map { categoryItems ->
             CategoryDetailsState(
-                categoryItems.sortedByDescending { it.fix }
+                categoryItems.sortedByDescending { it.updateTime }.sortedByDescending { it.fix }
             )
         }.stateIn(
             scope = viewModelScope,

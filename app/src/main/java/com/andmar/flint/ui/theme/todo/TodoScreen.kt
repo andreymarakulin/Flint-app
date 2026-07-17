@@ -17,7 +17,6 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetState
 import androidx.compose.material3.Text
@@ -36,7 +35,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.andmar.flint.DefaultSheetItem
 import com.andmar.flint.DefaultTopAppBar
 import com.andmar.flint.FlintViewModelProvider
 import com.andmar.flint.R
@@ -51,7 +49,7 @@ object TodoScreenRoute
 @Composable
 fun TodoScreen(
     viewModel: TodoViewModel = viewModel(factory = FlintViewModelProvider.Factory),
-    onNavEntryTodo: () -> Unit,
+    onNavEntryTodo: (String) -> Unit,
     onNavEditTodo: (String) -> Unit,
     onNavBack: () -> Unit
 ) {
@@ -69,7 +67,7 @@ fun TodoScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = onNavEntryTodo
+                onClick = { onNavEntryTodo("") }
             ) {
                 Icon(
                     painter = painterResource(R.drawable.add),
@@ -113,11 +111,22 @@ fun TodoBody(
                 scope.launch { todoActionsSheetState.show() }
             }
         }
+        item {
+            Text(
+                text = "Нажмине на плюсик, чтобы добавить задачу",
+                fontSize = 20.sp,
+                modifier = Modifier
+                    .fillMaxWidth(0.8f)
+                    .padding(10.dp)
+                    .padding(top = 20.dp)
+            )
+        }
     }
 
     if (todoActionsSheetState.isVisible) {
         TodoActionsSheet(
             sheetState = todoActionsSheetState,
+            todoDetails = todoUiState.selectedTodoDetails,
             onFix = { onActions(TodoActions.FixTodo) },
             onDone = { onActions(TodoActions.DoneTodo) },
             onHighlight = { onActions(TodoActions.HighlightTodo) },
@@ -152,7 +161,7 @@ fun TodoDetailsCard(
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            Column {
+            Column(Modifier.weight(1f)) {
                 if (todoDetails.title.isNotEmpty()) {
                     Text(
                         text = todoDetails.title,
@@ -201,64 +210,6 @@ fun TodoDetailsCard(
                     )
                 }
             }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TodoActionsSheet(
-    sheetState: SheetState,
-    onFix: () -> Unit,
-    onDone: () -> Unit,
-    onHighlight: () -> Unit,
-    onEdit: () -> Unit,
-    onDelete: () -> Unit,
-    onDismiss: () -> Unit
-) {
-    ModalBottomSheet(
-        sheetState = sheetState,
-        onDismissRequest = { onDismiss() }
-    ) {
-        DefaultSheetItem(
-            title = R.string.fix_note_title,
-            icon = R.drawable.keep,
-            desc = null
-        ) {
-            onFix()
-            onDismiss()
-        }
-        DefaultSheetItem(
-            title = R.string.done_note_title,
-            icon = R.drawable.done_outline,
-            desc = null
-        ) {
-            onDone()
-            onDismiss()
-        }
-        DefaultSheetItem(
-            title = R.string.highlight_note_title,
-            icon = R.drawable.favorite,
-            desc = null
-        ) {
-            onHighlight()
-            onDismiss()
-        }
-        DefaultSheetItem(
-            title = R.string.edit_note_title,
-            icon = R.drawable.edit,
-            desc = null
-        ) {
-            onEdit()
-            onDismiss()
-        }
-        DefaultSheetItem(
-            title = R.string.delete_note_title,
-            icon = R.drawable.delete,
-            desc = null
-        ) {
-            onDelete()
-            onDismiss()
         }
     }
 }

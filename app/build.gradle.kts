@@ -16,8 +16,8 @@ android {
         applicationId = "com.andmar.flint"
         minSdk = 24
         targetSdk = 37
-        versionCode = 3
-        versionName = "1.0-beta"
+        versionCode = 5
+        versionName = "1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -37,6 +37,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     flavorDimensions += listOf("data")
     productFlavors {
