@@ -7,17 +7,17 @@ plugins {
 }
 
 android {
-    namespace = "com.andmar.flint"
+    namespace = "ru.andmar.flint"
     compileSdk {
         version = release(37)
     }
 
     defaultConfig {
-        applicationId = "com.andmar.flint"
-        minSdk = 24
+        applicationId = "ru.andmar.flint"
+        minSdk = 26
         targetSdk = 37
-        versionCode = 5
-        versionName = "1.1"
+        versionCode = 16
+        versionName = "1.3.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -46,44 +46,62 @@ android {
         }
         create("room") {
             dimension = "data"
-            applicationIdSuffix = ".rustore"
-            versionNameSuffix = "-rustore"
+            applicationIdSuffix = ".room"
+            versionNameSuffix = "-room"
         }
     }
+
     tasks.configureEach {
         // Если имя текущей задачи сборки содержит "room" и относится к Google Services, отключаем её
         if (name.contains("room", ignoreCase = true) && name.contains("GoogleServices", ignoreCase = true)) {
             enabled = false
         }
     }
-
 }
 
 dependencies {
+    // --- ВЕРСИЯ (ROOM) ---
     "roomImplementation"(libs.androidx.room.runtime)
-    "kspRoom"(libs.androidx.room.compiler)
     "roomImplementation"(libs.androidx.room.ktx)
+    "kspRoom"(libs.androidx.room.compiler)
 
+    // --- ВЕРСИЯ (FIREBASE) ---
     "firebaseImplementation"(platform(libs.firebase.bom))
     "firebaseImplementation"(libs.firebase.analytics)
     "firebaseImplementation"(libs.firebase.auth)
     "firebaseImplementation"(libs.firebase.firestore)
 
+    // --- ОБЩИЕ ЗАВИСИМОСТИ ---
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.material3)
+    implementation(libs.androidx.compose.ui.graphics)
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.lifecycle.runtime.ktx)
+    implementation(libs.androidx.activity.compose)
+    implementation(libs.kotlinx.serialization.json)
+
+
+    implementation(libs.accompanist.permissions)
+
+
+    //WorkManager
+    implementation(libs.androidx.work.runtime.ktx)
+
+    //Koin
+    implementation(libs.koin.android)
+    implementation(libs.koin.androidx.compose)
+
+
+    // Coil
     implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
 
-    implementation(libs.androidx.material3)
-    implementation(libs.androidx.ui)
-    implementation(libs.androidx.navigation.compose)
-    implementation(libs.kotlinx.serialization.json)
-    implementation(platform(libs.androidx.compose.bom))
-    implementation(libs.androidx.activity.compose)
-    implementation(libs.androidx.compose.material3)
-    implementation(libs.androidx.compose.ui)
-    implementation(libs.androidx.compose.ui.graphics)
+    // Preview
     implementation(libs.androidx.compose.ui.tooling.preview)
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.lifecycle.runtime.ktx)
+
+    // --- ТЕСТЫ И ОТЛАДКА ---
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)

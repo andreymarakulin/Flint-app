@@ -4,15 +4,15 @@
     "type": "APK",
     "kind": "Directory"
   },
-  "applicationId": "com.andmar.flint.rustore",
+  "applicationId": "ru.andmar.flint.room",
   "variantName": "roomRelease",
   "elements": [
     {
       "type": "SINGLE",
       "filters": [],
       "attributes": [],
-      "versionCode": 5,
-      "versionName": "1.1-rustore",
+      "versionCode": 7,
+      "versionName": "1.2-room",
       "outputFile": "app-room-release.apk"
     }
   ],
@@ -33,5 +33,5 @@
       ]
     }
   ],
-  "minSdkVersionForDexing": 24
+  "minSdkVersionForDexing": 23
 }

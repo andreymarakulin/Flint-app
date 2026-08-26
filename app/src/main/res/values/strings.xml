@@ -1,65 +1,133 @@
 <resources>
     <string name="app_name">Flint</string>
 
+    <string name="actions_title">Actions</string>
+    <string name="ok_title">OK</string>
+    <string name="cancel_title">Cancel</string>
+    <string name="add_title">Add</string>
+    <string name="success_title">Success</string>
 
-    <!--Descriptions-->
-    <string name="go_back">Go back to route</string>
+    <!--ScreensTitle-->
+    <string name="notes_screen_title">Notes</string>
+    <string name="todos_screen_title">Todos</string>
+    <string name="categories_screen_title">Categories</string>
+    <string name="reminders_screen_title">Reminders</string>
+    <string name="settings_screen_title">Settings</string>
 
-    <!--Labels для text field-->
+    <!--ErrorDialog-->
+    <string name="error_dialog_title">Error</string>
+    <string name="repeat_title">Repeat</string>
+
+    <!--WarningDialog-->
+    <string name="warning_dialog_title">Warning</string>
+
+    <!--TextFieldLabels-->
     <string name="email_label">Email</string>
     <string name="password_label">Password</string>
+
     <string name="title_label">Title</string>
     <string name="text_label">Text</string>
 
-    <!--ЗАголовки для кнопок title buttons-->
-    <string name="continue_button">Continue</string>
+    <!--ActionsBottomSheet-->
+    <string name="sheet_update_title">Update:</string>
+    <string name="sheet_create_title">Create:</string>
+    <string name="sheet_highlight_title">Highlight</string>
+    <string name="sheet_done_title">Done</string>
+    <string name="sheet_fix_title">Fix</string>
+
+    <string name="fix_title">Fix</string>
+    <string name="unfix_title">Unfix</string>
+    <string name="done_title">Done</string>
+    <string name="undone_title">Undone</string>
+    <string name="highlight_title">Highlight</string>
+    <string name="unhighlight_title">Unhighlight</string>
+
+    <string name="edit_title">Edit</string>
+    <string name="delete_title">Delete</string>
+
+
+    <!--AccountScreen-->
+    <string name="account_title">Account</string>
+
+    <string name="edit_email_title">Edit email</string>
+    <string name="edit_password_title">Edit password</string>
+    <string name="sign_out_title">Sign out</string>
+    <string name="delete_account_title">Delete account</string>
+
+    <!--SignInScreen-->
+    <string name="sign_in_title">Sign in Flint</string>
+    <string name="if_no_have_account">If you don’t have account click upstarts</string>
+    <string name="sign_in_button">Sign in</string>
+
+    <!--SignUpScreen-->
+    <string name="sign_up_title">Sign up Flint</string>
     <string name="sign_up_button">Sign up</string>
 
-    <!--Screens titles заголовки для экранов-->
-    <string name="sign_in_screen_title">Sign in</string>
-    <string name="sign_up_screen_title">Sign up</string>
-    <string name="entry_screen_title">Entry</string>
-    <string name="edit_screen_title">Edit</string>
-    <string name="category_screen_title">Category</string>
-    <string name="todo_screen_title">Todo</string>
-    <string name="about_screen_title">About app</string>
+    <!--CategoryScreen-->
+    <string name="delete_category_snackbar_title">You delete category</string>
+    <string name="move_to_basket_category_snackbar_title">Category moving to basket</string>
+
+    <!--EntryCategoryScreen-->
+    <string name="entry_category_title">Create a new category</string>
+    <string name="entry_category_button">Create category</string>
+
+    <!--EditCategoryScreen-->
+    <string name="edit_category_title">Edit your category</string>
+    <string name="edit_category_button">Edit category</string>
+
+    <!--NoteScreen-->
+    <string name="delete_note_snackbar_title">You delete note</string>
+    <string name="move_to_basket_note_snackbar_title">Note moving to basket</string>
+
+    <!--EntryNoteScreen-->
+    <string name="entry_note_title">Create a new note</string>
+    <string name="entry_note_button">Create note</string>
+
+    <!--EditNoteScreen-->
+    <string name="edit_note_title">Edit your note</string>
+    <string name="edit_note_button">Edit note</string>
+
+    <!--ReminderScreen-->
+    <string name="delete_reminder_snackbar_title">You delete reminder</string>
+    <string name="move_to_basket_reminder_snackbar_title">Reminder moving to basket</string>
+
+    <string name="permissions_notification_title">To receive reminders, grant permission to show notifications in the next window.</string>
+
+    <!--EntryReminderScreen-->
+    <string name="entry_reminder_title">Create a new reminder</string>
+    <string name="entry_reminder_button">Create reminder</string>
+    <string name="choose_time_title">Choose time</string>
+
+    <!--EditReminderScreen-->
+    <string name="edit_reminder_title">Edit your reminder</string>
+    <string name="edit_reminder_button">Edit reminder</string>
+
+    <!--TodoScreen-->
+    <string name="delete_todo_snackbar_title">You delete todo</string>
+    <string name="move_to_basket_todo_snackbar_title">Todo moving to basket</string>
+
+    <!--EntryTodoScreen-->
+    <string name="entry_todo_title">Create a new todo</string>
+    <string name="entry_todo_button">Create todo</string>
+
+    <!--EditTodoScreen-->
+    <string name="edit_todo_title">Edit your todo</string>
+    <string name="edit_todo_button">Edit todo</string>
+
+    <!--SettingsScreen-->
+    <string name="account_manage_button">Account manage</string>
+    <string name="archive_title">Archive</string>
+    <string name="archive_manage_button">Archive manage</string>
+
+    <string name="basket_title">Basket</string>
+    <string name="basket_manage_button">Basket manage</string>
+
+    <string name="about_app_title">About app</string>
+
+    <!--ArchiveScreen-->
 
 
-    <string name="sign_in_screen_text">Sign in ANDMAR id</string>
-
-    <string name="user_agreement_title">By clicking on the button you agree to the user agreement</string>
-
-    <!--Entry category screen-->
-    <string name="entry_category_screen_title">Entry your category</string>
-
-    <!--Edit category screen-->
-    <string name="edit_category_screen_title">Edit your category</string>
-
-    <!--Entry note screen-->
-    <string name="entry_note_screen_title">Entry your note</string>
-
-    <!--Edit note screen-->
-    <string name="edit_note_screen_title">Edit your note</string>
-
-    <!--Todo screen-->
-    <string name="todo_scree_title">E</string>
-
-    <!--Entry todo screen-->
-    <string name="entry_todo_screen_title">Entry your todo</string>
-
-    <!--Edit todo screen-->
-    <string name="edit_todo_screen_title">Edit your todo</string>
 
 
-    <!--Note actions title заголовки для меню заметок-->
-    <string name="fix_note_title">Fix</string>
-    <string name="unfix_note_title">Unfix</string>
-    <string name="done_note_title">Done</string>
-    <string name="undone_note_title">Undone</string>
-    <string name="highlight_note_title">Highlight</string>
-    <string name="unhighlight_note_title">Unhighlight</string>
-    <string name="edit_note_title">Edit</string>
-    <string name="delete_note_title">Delete</string>
-    <string name="ru">string</string>
 
 </resources>
