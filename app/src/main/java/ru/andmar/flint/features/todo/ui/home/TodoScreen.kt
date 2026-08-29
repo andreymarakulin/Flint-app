@@ -1,5 +1,6 @@
 package ru.andmar.flint.features.todo.ui.home
 
+import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -75,7 +76,7 @@ fun TodoScreen(
             when(navigationEffect) {
                 is TodoUiAction.None -> {}
                 is TodoUiAction.EditTodo -> {
-                    onNavigationRoutes(NavigationRoutes.EditNoteScreenRoute(navigationEffect.todoId))
+                    onNavigationRoutes(NavigationRoutes.EditTodoScreenRoute(navigationEffect.todoId))
                 }
                 is TodoUiAction.ShowDeleteSnackbar -> {
                     val snackbarResult = snackbarHostState.showSnackbar(

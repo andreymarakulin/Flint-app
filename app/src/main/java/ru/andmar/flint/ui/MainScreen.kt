@@ -1,13 +1,11 @@
 package ru.andmar.flint.ui
 
-import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
@@ -35,50 +33,56 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
-import ru.andmar.flint.navigation.NavigationRoutes
 import ru.andmar.flint.R
 import ru.andmar.flint.core.ui.ModalSheetItem
-import ru.andmar.flint.core.ui.components.DefaultModalSheetItem
+import ru.andmar.flint.core.ui.components.DefaultMenuSheet
 import ru.andmar.flint.core.ui.components.DefaultTopAppBar
 import ru.andmar.flint.features.category.ui.home.CategoryScreen
 import ru.andmar.flint.features.note.ui.home.NoteScreen
 import ru.andmar.flint.features.reminder.ui.home.ReminderScreen
-import ru.andmar.flint.features.settings.ui.SettingsScreen
 import ru.andmar.flint.features.todo.ui.home.TodoScreen
 import ru.andmar.flint.navigation.MainScreenNavigationRoutes
+import ru.andmar.flint.navigation.NavigationRoutes
 
 
 data class FlintNavigationBarItem(
     val title: Int,
     val icon: Int,
-    val route: MainScreenNavigationRoutes
+    val route: MainScreenNavigationRoutes,
+    val entryRoute: NavigationRoutes
 )
 
-val navigationBarItemList = listOf(
+fun navigationBarItemList(categoryId: String) = listOf(
     FlintNavigationBarItem(
         title = R.string.notes_screen_title,
         icon = R.drawable.notes,
-        route = MainScreenNavigationRoutes.NoteScreenRoute
+        route = MainScreenNavigationRoutes.NoteScreenRoute,
+        entryRoute = NavigationRoutes.EntryNoteScreenRoute(categoryId)
     ),
     FlintNavigationBarItem(
         title = R.string.todos_screen_title,
         icon = R.drawable.task_alt,
-        route = MainScreenNavigationRoutes.TodoScreenRoute
+        route = MainScreenNavigationRoutes.TodoScreenRoute,
+        entryRoute = NavigationRoutes.EntryTodoScreenRoute("")
     ),
     FlintNavigationBarItem(
         title = R.string.categories_screen_title,
         icon = R.drawable.category,
-        route = MainScreenNavigationRoutes.CategoryScreenRoute
+        route = MainScreenNavigationRoutes.CategoryScreenRoute,
+        entryRoute = NavigationRoutes.EntryCategoryScreenRoute
     ),
     /*
     FlintNavigationBarItem(
         title = R.string.reminders_screen_title,
         icon = R.drawable.reminder,
-        route = MainScreenNavigationRoutes.ReminderScreenRoute
+        route = MainScreenNavigationRoutes.ReminderScreenRoute,
+        entryRoute = NavigationRoutes.EntryNoteScreenRoute("")
     )
 
      */
 )
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
@@ -96,10 +100,13 @@ fun HomeScreen(
     val homeMenuSheetState = rememberModalBottomSheetState()
     var isShowHomeMenuSheet by rememberSaveable { mutableStateOf(false) }
 
+    val navigationBarItemList = navigationBarItemList(categoryId)
+    val currentNavigationBarItem = navigationBarItemList[selectedNavigationBarIndex]
+
     Scaffold(
         topBar = {
             DefaultTopAppBar(
-                title = stringResource(navigationBarItemList[selectedNavigationBarIndex].title),
+                title = stringResource(currentNavigationBarItem.title),
                 //navIcon = R.drawable.label,
                 navDes = null,
                 onNavIcon = {},
@@ -110,25 +117,7 @@ fun HomeScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = {
-                    when (selectedNavigationBarIndex) {
-                        0 -> {
-                            onNavigationRoutes(NavigationRoutes.EntryNoteScreenRoute(categoryId))
-                        }
-
-                        1 -> {
-                            onNavigationRoutes(NavigationRoutes.EntryTodoScreenRoute(""))
-                        }
-
-                        2 -> {
-                            onNavigationRoutes(NavigationRoutes.EntryCategoryScreenRoute)
-                        }
-
-                        3 -> {
-                            onNavigationRoutes(NavigationRoutes.EntryReminderScreenRoute)
-                        }
-                    }
-                }
+                onClick = { onNavigationRoutes(currentNavigationBarItem.entryRoute) }
             ) {
                 Icon(
                     painter = painterResource(R.drawable.add),
@@ -214,7 +203,7 @@ fun MainScreenNavHost(
         composable<MainScreenNavigationRoutes.TodoScreenRoute> {
             TodoScreen(
                 snackbarHostState = snackbarHostState,
-            ) { }
+            ) { onNavigationRoutes(it) }
         }
         composable<MainScreenNavigationRoutes.ReminderScreenRoute> {
             ReminderScreen(
@@ -231,20 +220,12 @@ fun MainScreenMenuSheet(
     onNavigationRoutes: (NavigationRoutes) -> Unit,
     onDismiss: () -> Unit
 ) {
-    ModalBottomSheet(
+
+    DefaultMenuSheet(
         sheetState = sheetState,
-        onDismissRequest = onDismiss
-    ) {
-        homeMenuSheetItems(onNavigationRoutes).forEach { item ->
-            DefaultModalSheetItem(
-                title = item.title,
-                icon = item.icon
-            ) {
-                item.onClick()
-                onDismiss()
-            }
-        }
-    }
+        menuSheetItems = homeMenuSheetItems(onNavigationRoutes),
+        onDismiss = onDismiss
+    )
 }
 
 fun homeMenuSheetItems(onNavigationRoutes: (NavigationRoutes) -> Unit): List<ModalSheetItem> = listOf(

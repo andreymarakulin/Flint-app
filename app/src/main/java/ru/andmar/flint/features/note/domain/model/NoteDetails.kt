@@ -1,19 +1,20 @@
 package ru.andmar.flint.features.note.domain.model
 
 import androidx.compose.runtime.Immutable
+import ru.andmar.flint.core.ui.components.DefaultDetails
 import kotlin.random.Random
 
 @Immutable
 data class NoteDetails(
-    val id: String = "",
+    override val id: String = "",
     val categoryId: String = "",
-    val title: String = "",
+    override val title: String = "",
     val text: String = "",
-    val fix: Boolean = false,
+    override val fix: Boolean = false,
     val done: Boolean = false,
-    val highlight: Boolean = false,
-    val deleted: Boolean = false,
-    val createTime: Long = 0L,
-    val updateTime: Long = 0L,
-    val lazyKey: Int = Random.nextInt(Int.MAX_VALUE)
-)
+    override val highlight: Boolean = false,
+    override val deleted: Boolean = false,
+    override val createTime: Long = 0L,
+    override val updateTime: Long = 0L,
+    override val lazyKey: Int = Random.nextInt(Int.MAX_VALUE)
+): DefaultDetails

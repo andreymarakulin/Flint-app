@@ -4,10 +4,13 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.toRoute
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -16,6 +19,7 @@ import ru.andmar.flint.features.note.domain.usecase.DetailsUseCase
 import ru.andmar.flint.features.note.domain.usecase.NoteActionsUseCase
 import ru.andmar.flint.features.note.ui.components.NoteAction
 import ru.andmar.flint.features.todo.domain.usecase.TodoActionsUseCase
+import ru.andmar.flint.features.todo.ui.components.TodoAction
 import ru.andmar.flint.features.todo.ui.home.TodoDetailsState
 import ru.andmar.flint.navigation.NavigationRoutes
 
@@ -51,11 +55,14 @@ class DetailsViewModel(
     private val _detailsUiState = MutableStateFlow(DetailsUiState())
     val detailsUiState: StateFlow<DetailsUiState> = _detailsUiState
 
+    private val _detailsUiAction = Channel<DetailsUiAction>()
+    val detailsUiAction = _detailsUiAction.receiveAsFlow()
 
-    fun onActions(detailsActions: DetailsActions) {
-        when(detailsActions) {
-            is DetailsActions.NoteActions -> {
-                when(val noteAction = detailsActions.noteAction) {
+
+    fun onActions(detailsScreenActions: DetailsScreenActions) {
+        when(detailsScreenActions) {
+            is DetailsScreenActions.NoteActions -> {
+                when(val noteAction = detailsScreenActions.noteAction) {
                     is NoteAction.FixNote -> {
                         flintAction {
                             noteActionsUseCase.fixNote(noteAction.noteDetails)
@@ -84,27 +91,38 @@ class DetailsViewModel(
                     }
                 }
             }
-            is DetailsActions.FixTodo -> {
-                flintAction {
-                    todoActionsUseCase.fixTodo(detailsActions.todoDetails)
+            is DetailsScreenActions.TodoActions -> {
+                when(val todoAction = detailsScreenActions.todoAction) {
+                    is TodoAction.FixTodo -> {
+                        flintAction {
+                            todoActionsUseCase.fixTodo(todoAction.todoDetails)
+                        }
+                    }
+                    is TodoAction.DoneTodo -> {
+                        flintAction {
+                            todoActionsUseCase.doneTodo(todoAction.todoDetails)
+                        }
+                    }
+                    is TodoAction.HighlightTodo -> {
+                        flintAction {
+                            todoActionsUseCase.highlightTodo(todoAction.todoDetails)
+                        }
+                    }
+                    is TodoAction.EditTodo -> {
+                        viewModelScope.launch {
+                            _detailsUiAction.send(
+                                DetailsUiAction.EditNote(todoAction.todoId)
+                            )
+                        }
+                    }
+                    is TodoAction.DeleteTodo -> {
+                        flintAction {
+                            todoActionsUseCase.updateTodoDeleteState(todoAction.todoDetails)
+                        }
+                    }
                 }
             }
-            is DetailsActions.DoneTodo -> {
-                flintAction {
-                    todoActionsUseCase.doneTodo(detailsActions.todoDetails)
-                }
-            }
-            is DetailsActions.HighlightTodo -> {
-                flintAction {
-                    todoActionsUseCase.highlightTodo(detailsActions.todoDetails)
-                }
-            }
-            is DetailsActions.DeleteTodo -> {
-                flintAction {
-                    todoActionsUseCase.updateTodoDeleteState(detailsActions.todoDetails)
-                }
-            }
-            is DetailsActions.DismissError -> {
+            is DetailsScreenActions.DismissError -> {
                 _detailsUiState.update {
                     it.copy(flintActions = FlintActions.Default)
                 }

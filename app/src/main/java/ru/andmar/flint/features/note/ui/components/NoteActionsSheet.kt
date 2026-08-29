@@ -1,28 +1,12 @@
 package ru.andmar.flint.features.note.ui.components
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import ru.andmar.flint.R
 import ru.andmar.flint.core.ui.ModalSheetItem
-import ru.andmar.flint.core.ui.components.DefaultModalSheetItem
+import ru.andmar.flint.core.ui.components.ActionsSheet
 import ru.andmar.flint.features.note.domain.model.NoteDetails
-import ru.andmar.flint.features.reminder.domain.model.dateToUi
-import kotlin.collections.forEach
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -32,123 +16,12 @@ fun NoteActionsSheet(
     onActions: (NoteAction) -> Unit,
     onDismiss: () -> Unit
 ) {
-    ModalBottomSheet(
+    ActionsSheet(
         sheetState = sheetState,
-        onDismissRequest = { onDismiss() }
-    ) {
-        Column {
-            if (noteDetails.title.isNotBlank()) {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 10.dp)
-                        .padding(vertical = 5.dp)
-                ) {
-                    Text(
-                        text = noteDetails.title,
-                        maxLines = 1,
-                        fontWeight = FontWeight.Bold,
-                        overflow = TextOverflow.Ellipsis,
-                        textDecoration = if (noteDetails.done) {
-                            TextDecoration.LineThrough
-                        } else TextDecoration.None,
-                        modifier = Modifier
-                            .padding(horizontal = 10.dp)
-                            .padding(vertical = 5.dp)
-                    )
-                }
-            }
-            if (noteDetails.text.isNotBlank()) {
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 10.dp)
-                        .padding(vertical = 5.dp)
-                ) {
-                    Text(
-                        text = noteDetails.text,
-                        fontSize = 12.sp,
-                        maxLines = 7,
-                        modifier = Modifier
-                            .padding(horizontal = 10.dp)
-                            .padding(bottom = 5.dp)
-                    )
-                }
-            }
-            LazyRow() {
-                item {
-                    Card(Modifier.padding(3.dp)) {
-                        Text(
-                            text = "Обновлено: ${dateToUi(noteDetails.updateTime)}",
-                            fontSize = 12.sp,
-                            modifier = Modifier.padding(5.dp)
-                        )
-                    }
-                }
-                item {
-                    Card(Modifier.padding(3.dp)) {
-                        Text(
-                            text = "Создано: ${dateToUi(noteDetails.createTime)}",
-                            fontSize = 12.sp,
-                            modifier = Modifier.padding(5.dp)
-                        )
-                    }
-                }
-                item {
-                    if (noteDetails.done) {
-                        Card(Modifier.padding(3.dp)) {
-                            Text(
-                                text = "Выполненно",
-                                fontSize = 12.sp,
-                                modifier = Modifier.padding(5.dp)
-                            )
-                        }
-                    }
-                }
-                item {
-                    if (noteDetails.highlight) {
-                        Card(Modifier.padding(3.dp)) {
-                            Text(
-                                text = "Выделено",
-                                fontSize = 12.sp,
-                                modifier = Modifier.padding(5.dp)
-                            )
-                        }
-                    }
-                }
-                item {
-                    if (noteDetails.fix) {
-                        Card(Modifier.padding(3.dp)) {
-                            Text(
-                                text = "Закреплено",
-                                fontSize = 12.sp,
-                                modifier = Modifier.padding(5.dp)
-                            )
-                        }
-                    }
-                }
-            }
-            Text(
-                text = "Действия",
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier
-                    .padding(vertical = 5.dp)
-                    .padding(horizontal = 10.dp)
-            )
-            noteActionsSheetItems(
-                noteDetails = noteDetails
-            ) { onActions(it) }.forEach { item ->
-                DefaultModalSheetItem(
-                    title = item.title,
-                    icon = item.icon,
-                    description = item.description
-                ) {
-                    item.onClick()
-                    onDismiss()
-                }
-            }
-        }
-    }
+        details = noteDetails,
+        actionsSheetItems = noteActionsSheetItems(noteDetails, onActions),
+        onDismiss = onDismiss
+    )
 }
 
 fun noteActionsSheetItems(

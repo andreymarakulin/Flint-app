@@ -63,7 +63,11 @@ class CategoryViewModel(
                         }
                     }
                     is CategoryAction.EditCategory -> {
-
+                        viewModelScope.launch {
+                            _categoryUiAction.send(
+                                CategoryUiAction.EditCategory(categoryAction.categoryId)
+                            )
+                        }
                     }
                     is CategoryAction.DeleteCategory -> {
                         flintActions {

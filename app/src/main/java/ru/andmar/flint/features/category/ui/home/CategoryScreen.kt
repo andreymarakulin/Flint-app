@@ -44,6 +44,7 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import ru.andmar.flint.R
 import ru.andmar.flint.core.ui.FlintActions
+import ru.andmar.flint.core.ui.components.DefaultDetails
 import ru.andmar.flint.core.ui.components.DefaultLoadingDialog
 import ru.andmar.flint.core.ui.components.ErrorDialog
 import ru.andmar.flint.features.category.domain.model.CategoryDetails
@@ -66,7 +67,6 @@ fun CategoryScreen(
     val cancelDeleteCategorySnackbarTitle = stringResource(R.string.cancel_title)
     val moveToBasketDeleteCategorySnackbarTitle = stringResource(R.string.move_to_basket_category_snackbar_title)
 
-
     CategoryBody(
         categoryDetailsListState = categoryDetailsListState.value,
         categoryUiState = categoryUiState.value,
@@ -77,7 +77,7 @@ fun CategoryScreen(
             when(navigationEffect) {
                 is CategoryUiAction.None -> {}
                 is CategoryUiAction.EditCategory -> {
-                    onNavigationRoutes(NavigationRoutes.EditNoteScreenRoute(navigationEffect.categoryId))
+                    onNavigationRoutes(NavigationRoutes.EditCategoryScreenRoute(navigationEffect.categoryId))
                 }
                 is CategoryUiAction.ShowDeleteSnackbar -> {
 

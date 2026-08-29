@@ -15,12 +15,19 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.InputChip
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,6 +38,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
@@ -45,6 +53,10 @@ import ru.andmar.flint.core.ui.FlintActions
 import ru.andmar.flint.core.ui.components.DefaultLoadingDialog
 import ru.andmar.flint.core.ui.components.DefaultTopAppBar
 import ru.andmar.flint.core.ui.components.ErrorDialog
+import ru.andmar.flint.features.note.ui.components.NoteAction
+import ru.andmar.flint.features.note.ui.components.NoteActionsSheet
+import ru.andmar.flint.features.note.ui.home.NoteScreenActions
+import ru.andmar.flint.features.note.ui.home.NoteUiAction
 import ru.andmar.flint.features.todo.domain.model.TodoDetails
 import ru.andmar.flint.features.todo.ui.components.TodoActionsSheet
 import ru.andmar.flint.features.todo.ui.home.TodoDetailsCard
@@ -64,7 +76,14 @@ fun DetailsScreen(
     val detailsUiState = viewModel.detailsUiState.collectAsStateWithLifecycle()
 
     val noteActionsSheetState: SheetState = rememberModalBottomSheetState()
+    val showNoteActionsSheet = rememberSaveable { mutableStateOf(false) }
     val scope: CoroutineScope = rememberCoroutineScope()
+
+    val snackbarHostState = remember { SnackbarHostState() }
+
+    val deleteNoteSnackbarTitle = stringResource(R.string.delete_note_snackbar_title)
+    val cancelNoteCategorySnackbarTitle = stringResource(R.string.cancel_title)
+    val moveToBasketDeleteNoteSnackbarTitle = stringResource(R.string.move_to_basket_note_snackbar_title)
 
     Scaffold(
         topBar = {
@@ -75,9 +94,10 @@ fun DetailsScreen(
                 onNavIcon = onNavBack,
                 actionsIcon = R.drawable.more_vert,
                 actionsDes = "more",
-                onActions = { scope.launch { noteActionsSheetState.show() } }
+                onActions = { showNoteActionsSheet.value = true }
             )
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
@@ -95,21 +115,42 @@ fun DetailsScreen(
     ) { innerPadding ->
         DetailsBody(
             innerPaddingValues = innerPadding,
+            snackbarHostState = snackbarHostState,
             noteDetailsState = noteDetailsState.value,
             todoDetailsState = todoDetailsState.value,
             detailsUiState = detailsUiState.value,
             noteActionsSheetState = noteActionsSheetState,
+            showNoteActionsSheet = showNoteActionsSheet,
             scope = scope,
-            onClickEditNote = { onNavigationRoutes(NavigationRoutes.EditNoteScreenRoute(it)) },
-            onClickEditTodo = {
-                /*
-                onNavigationRoutes(
-                    NavigationRoutes.EditTodoScreenRoute()
-                )
-
-                 */
-            },
+            onClickEditNote = { onNavigationRoutes(NavigationRoutes.EditNoteScreenRoute(it)) }
         ) { viewModel.onActions(it) }
+    }
+
+    LaunchedEffect(viewModel.detailsUiAction) {
+        viewModel.detailsUiAction.collect { navigationEffect ->
+            when(navigationEffect) {
+                is DetailsUiAction.None -> {}
+                is DetailsUiAction.EditNote -> {
+                    onNavigationRoutes(NavigationRoutes.EditNoteScreenRoute(navigationEffect.noteId))
+                }
+                is DetailsUiAction.ShowDeleteSnackbar -> {
+                    val snackbarResult = snackbarHostState.showSnackbar(
+                        message = deleteNoteSnackbarTitle,
+                        actionLabel = cancelNoteCategorySnackbarTitle,
+                        duration = SnackbarDuration.Long
+                    )
+                    when(snackbarResult) {
+                        SnackbarResult.ActionPerformed -> {
+                            viewModel.onActions(DetailsScreenActions.NoteActions(NoteAction.RestoreNote(navigationEffect.noteDetails)))
+                        }
+                        SnackbarResult.Dismissed -> snackbarHostState.showSnackbar(
+                            message = moveToBasketDeleteNoteSnackbarTitle,
+                            duration = SnackbarDuration.Short
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -117,17 +158,20 @@ fun DetailsScreen(
 @Composable
 fun DetailsBody(
     innerPaddingValues: PaddingValues,
+    snackbarHostState: SnackbarHostState,
     noteDetailsState: NoteDetailsState,
     todoDetailsState: TodoDetailsState,
     detailsUiState: DetailsUiState,
     noteActionsSheetState: SheetState,
+    showNoteActionsSheet: MutableState<Boolean>,
     scope: CoroutineScope,
     onClickEditNote: (String) -> Unit,
-    onClickEditTodo: () -> Unit,
-    onActions: (DetailsActions) -> Unit
+    onActions: (DetailsScreenActions) -> Unit
 ) {
-   // val isEditNoteTitle = rememberSaveable { mutableStateOf(false) }
-   // val isEditNoteText = rememberSaveable { mutableStateOf(false) }
+    //val isEditNoteTitle = rememberSaveable { mutableStateOf(false) }
+    //val isEditNoteText = rememberSaveable { mutableStateOf(false) }
+
+    val successSnackbarTitle = stringResource(R.string.success_title)
 
     val todoActionsSheetState: SheetState = rememberModalBottomSheetState()
     var showTodoActionsSheet by rememberSaveable { mutableStateOf(false) }
@@ -194,6 +238,27 @@ fun DetailsBody(
                     )
                 }
                 if (noteDetailsState.noteDetails.fix) {
+
+                    InputChip(
+                        onClick = {},
+                        label = { Text("Fix") },
+                        selected = true,
+                        avatar = {
+                            Icon(
+                                painter = painterResource(R.drawable.keep),
+                                contentDescription = null
+                            )
+                        },
+                        trailingIcon = {
+                            Icon(
+                                painter = painterResource(R.drawable.close),
+                                contentDescription = null
+                            )
+                        },
+                        modifier = Modifier.padding(10.dp)
+                    )
+
+                    /*
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
                             painter = painterResource(R.drawable.keep),
@@ -207,6 +272,10 @@ fun DetailsBody(
                                 .padding(bottom = 5.dp)
                         )
                     }
+
+
+                     */
+
                 }
             }
         }
@@ -239,33 +308,41 @@ fun DetailsBody(
         }
     }
 
-    if (noteActionsSheetState.isVisible) {
-        /*
+    if (showNoteActionsSheet.value) {
         NoteActionsSheet(
             sheetState = noteActionsSheetState,
             noteDetails = noteDetailsState.noteDetails,
-
-        ) { scope.launch { noteActionsSheetState.hide() } }
-
-         */
+            onActions = { onActions(DetailsScreenActions.NoteActions(it)) }
+        ) {
+            scope.launch { noteActionsSheetState.hide() }.invokeOnCompletion {
+                showNoteActionsSheet.value = false
+            }
+        }
     }
 
     if (showTodoActionsSheet) {
         TodoActionsSheet(
             sheetState = todoActionsSheetState,
             todoDetails = selectedTodoDetails,
-            onActions = { }
+            onActions = { onActions(DetailsScreenActions.TodoActions(it)) }
         ) { scope.launch { todoActionsSheetState.hide() } }
     }
 
     when(detailsUiState.flintActions) {
         is FlintActions.Default -> {}
-        is FlintActions.Success -> {}
+        is FlintActions.Success -> {
+            LaunchedEffect(snackbarHostState) {
+                snackbarHostState.showSnackbar(
+                    message = successSnackbarTitle,
+                    duration = SnackbarDuration.Short
+                )
+            }
+        }
         is FlintActions.Loading -> DefaultLoadingDialog()
         is FlintActions.Error -> {
             ErrorDialog(
                 message = detailsUiState.flintActions.message
-            ) { onActions(DetailsActions.DismissError) }
+            ) { onActions(DetailsScreenActions.DismissError) }
         }
     }
 }

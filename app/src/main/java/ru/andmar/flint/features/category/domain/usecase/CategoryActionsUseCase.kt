@@ -1,5 +1,6 @@
 package ru.andmar.flint.features.category.domain.usecase
 
+import ru.andmar.flint.core.ui.components.DefaultDetails
 import ru.andmar.flint.features.category.data.repository.CategoryRepository
 import ru.andmar.flint.features.category.domain.model.CategoryDetails
 import ru.andmar.flint.features.todo.domain.model.TodoDetails

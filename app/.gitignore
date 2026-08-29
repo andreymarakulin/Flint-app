@@ -1,5 +1,5 @@
 /build
 /release
-/firebase/release/
-/room/release/
-app/google-services.json
+**/firebase/release/
+**/room/release/
+**/google-services.json
