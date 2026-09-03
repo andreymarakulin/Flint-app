@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="actions_title">Действия</string>
+    <string name="ok_title">OK</string>
+    <string name="cancel_title">Отмена</string>
+    <string name="add_title">Добавить</string>
+    <string name="success_title">Успешно</string>
+
+    <!--ScreensTitle-->
+    <string name="notes_screen_title">Заметки</string>
+    <string name="todos_screen_title">Задачи</string>
+    <string name="categories_screen_title">Категории</string>
+    <string name="reminders_screen_title">Напоминания</string>
+    <string name="settings_screen_title">Настройки</string>
+
+    <!--ErrorDialog-->
+    <string name="error_dialog_title">Ошибка</string>
+    <string name="repeat_title">Повторить</string>
+
+    <!--WarningDialog-->
+    <string name="warning_dialog_title">Предупреждение</string>
+
+    <!--TextFieldLabels-->
+    <string name="email_label">Ел.почта</string>
+    <string name="password_label">Пароль</string>
+
+    <string name="title_label">Заголовок</string>
+    <string name="text_label">Текст</string>
+
+    <!--ActionsBottomSheet-->
+    <string name="sheet_update_title">Обновлено:</string>
+    <string name="sheet_create_title">Создано:</string>
+    <string name="sheet_highlight_title">Выделенно</string>
+    <string name="sheet_done_title">Выполненно</string>
+    <string name="sheet_fix_title">Закрепленно</string>
+
+    <string name="fix_title">Закрепить</string>
+    <string name="unfix_title">Открепить</string>
+    <string name="done_title">Пометить как выполненно</string>
+    <string name="undone_title">Пометить как не выполненно</string>
+    <string name="highlight_title">Выделить</string>
+    <string name="unhighlight_title">Сделать не выделенным</string>
+
+    <string name="edit_title">Редактировать</string>
+    <string name="delete_title">Удалить</string>
+
+    <!--AccountScreen-->
+    <string name="account_title">Аккаунт</string>
+
+    <string name="edit_email_title">Изменить ел.почту</string>
+    <string name="edit_password_title">Изменить пароль</string>
+    <string name="sign_out_title">Выйти из аккаунта</string>
+    <string name="delete_account_title">Удалить аккаунт</string>
+
+    <!--SignInScreen-->
+    <string name="sign_in_title">Войти в Flint</string>
+    <string name="if_no_have_account">Если у вас нет аккаунта, нажмите ниже</string>
+    <string name="sign_in_button">Войти</string>
+
+    <!--SignUpScreen-->
+    <string name="sign_up_title">Зарегестрироваться Flint</string>
+    <string name="sign_up_button">Зарегестрироваться</string>
+
+    <!--CategoryScreen-->
+    <string name="delete_category_snackbar_title">Вы удалили категорию</string>
+    <string name="move_to_basket_category_snackbar_title">Категория перемещена в корзину</string>
+
+    <!--EntryCategoryScreen-->
+    <string name="entry_category_title">Создайте новую категорию</string>
+    <string name="entry_category_button">Создать категорию</string>
+
+    <!--EditCategoryScreen-->
+    <string name="edit_category_title">Редактируйте свою категорию</string>
+    <string name="edit_category_button">Редактируйте категорию</string>
+
+    <!--NoteScreen-->
+    <string name="delete_note_snackbar_title">Вы удалили заметку</string>
+    <string name="move_to_basket_note_snackbar_title">Заметка перемещена в корзину</string>
+
+    <!--EntryNoteScreen-->
+    <string name="entry_note_title">Создайте новую заметку</string>
+    <string name="entry_note_button">Создать заметку</string>
+
+    <!--EditNoteScreen-->
+    <string name="edit_note_title">Редактируйте свою заметку</string>
+    <string name="edit_note_button">Редактировать заметку</string>
+
+    <!--ReminderScreen-->
+    <string name="delete_reminder_snackbar_title">Вы удалили напоменание</string>
+    <string name="move_to_basket_reminder_snackbar_title">Напоминание перемещено в корзину</string>
+
+    <string name="permissions_notification_title">Чтобы приходили напоминания дайте разрешение на показ уведомлений в следующем окне.</string>
+
+    <!--EntryReminderScreen-->
+    <string name="entry_reminder_title">Создайте новое напоминание</string>
+    <string name="entry_reminder_button">Создать напоминание</string>
+    <string name="choose_time_title">Выберете время</string>
+
+    <!--EditReminderScreen-->
+    <string name="edit_reminder_title">Редактируйте своё напоминание</string>
+    <string name="edit_reminder_button">Редактировать напоминание</string>
+
+    <!--TodoScreen-->
+    <string name="delete_todo_snackbar_title">Вы удалили задачу</string>
+    <string name="move_to_basket_todo_snackbar_title">Задача перемещена в корзину</string>
+
+    <!--EntryTodoScreen-->
+    <string name="entry_todo_title">Создайте новую задачу</string>
+    <string name="entry_todo_button">Создать задачу</string>
+
+    <!--EditTodoScreen-->
+    <string name="edit_todo_title">Редактируйте свою задачу</string>
+    <string name="edit_todo_button">Редактировать задачу</string>
+
+    <!--SettingsScreen-->
+    <string name="account_manage_button">Управление аккаунтом</string>
+    <string name="archive_title">Архив</string>
+    <string name="archive_manage_button">Управление акхивом</string>
+
+    <string name="basket_title">Карзина</string>
+    <string name="basket_manage_button">Управление карзиной</string>
+
+    <string name="about_app_title">О приложении</string>
+
+</resources>
