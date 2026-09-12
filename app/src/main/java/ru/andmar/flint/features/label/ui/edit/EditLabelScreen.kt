@@ -8,25 +8,24 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
-import kotlinx.serialization.Serializable
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
 import ru.andmar.flint.R
 import ru.andmar.flint.core.ui.FlintActions
-import ru.andmar.flint.core.ui.components.DefaultButton
-import ru.andmar.flint.core.ui.components.DefaultLoadingDialog
-import ru.andmar.flint.core.ui.components.DefaultScreenText
 import ru.andmar.flint.core.ui.components.DefaultTopAppBar
-import ru.andmar.flint.core.ui.components.ErrorDialog
+import ru.andmar.flint.core.ui.components.button.DefaultButton
+import ru.andmar.flint.core.ui.components.dialog.DefaultLoadingDialog
+import ru.andmar.flint.core.ui.components.dialog.ErrorDialog
+import ru.andmar.flint.core.ui.components.text.DefaultScreenText
 import ru.andmar.flint.features.label.ui.entry.LabelDetailsForm
-
-@Serializable
-data class EditLabelScreenRoute(val labelId: String)
 
 @Composable
 fun EditLabelScreen(
     viewModel: EditLabelViewModel = koinViewModel(),
     onNavBack: () -> Unit
 ) {
+
+    val editLabelUiState = viewModel.editLabelUiState.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -40,7 +39,7 @@ fun EditLabelScreen(
     ) { innerPadding ->
         EditLabelBody(
             innerPaddingValues = innerPadding,
-            editLabelUiState = viewModel.editLabelUiState,
+            editLabelUiState = editLabelUiState.value,
             onSuccess = onNavBack
         ) { viewModel.onActions(it) }
     }
@@ -58,17 +57,14 @@ fun EditLabelBody(
             .fillMaxSize()
             .padding(innerPaddingValues)
     ) {
-        //DefaultScreenText(stringResource(R.string.sign_in_screen_text))
+        DefaultScreenText(stringResource(R.string.edit_label_title))
         LabelDetailsForm(
             labelDetails = editLabelUiState.labelDetails
         ) { onActions(EditLabelScreenActions.UpdateLabelScreenDetails(it)) }
-        /*
         DefaultButton(
-            title = stringResource(R.string.continue_button),
+            title = stringResource(R.string.edit_label_button),
             enabled = editLabelUiState.isAction
         ) { onActions(EditLabelScreenActions.EditLabel) }
-
-         */
     }
 
     when(editLabelUiState.flintActions) {

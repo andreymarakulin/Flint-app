@@ -1,11 +1,11 @@
 package ru.andmar.flint.features.reminder.domain.model
 
 import ru.andmar.flint.core.ui.components.DefaultDetails
+import ru.andmar.flint.features.label.domain.model.LabelDetails
 import kotlin.random.Random
 
 data class ReminderDetails(
     override val id: String = "",
-    val reminderId: Int = 0,
     override val title: String = "",
     override val text: String = "",
     val color: String = "",
@@ -14,6 +14,7 @@ data class ReminderDetails(
     override val highlight: Boolean = false,
     val deleted: Boolean = false,
     val archive: Boolean = false,
+    val repeat: Boolean = false,
     val devicesName: List<String> = emptyList(),
     val reminderDate: Long = 0, // Готовая дата для напоминания
     val repeatInterval: Long = 0L,
@@ -23,5 +24,6 @@ data class ReminderDetails(
     val date: Long = System.currentTimeMillis(),
     val hours: Int = 0,
     val minutes: Int = 0,
+    val reminderId: Int = 0,
     val lazyKey: Int = Random.nextInt(Int.MAX_VALUE)
 ): DefaultDetails

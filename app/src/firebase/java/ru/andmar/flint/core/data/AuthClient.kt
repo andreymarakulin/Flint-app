@@ -1,5 +1,6 @@
 package ru.andmar.flint.core.data
 
+import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.channels.awaitClose
@@ -42,7 +43,31 @@ class AuthClient(private val auth: FirebaseAuth): DefaultAuthClient {
         ).await()
     }
 
+    override suspend fun updateEmail(email: String) {
+        val user = auth.currentUser
+
+        //val credential = EmailAuthProvider.getCredential(email, currentPassword)
+
+        // Подтверждаем личность через корутины
+        //user.reauthenticate(credential).await()
+
+
+        user?.verifyBeforeUpdateEmail(email)?.await()
+    }
+
+    override suspend fun updatePassword(password: String) {
+        val user = auth.currentUser
+
+       // val credential = EmailAuthProvider.getCredential(email, currentPassword)
+
+        // Подтверждаем личность через корутины
+        //user.reauthenticate(credential).await()
+
+
+        user?.updatePassword(password)?.await()
+    }
+
     override suspend fun signOut() {
-            auth.signOut()
+        auth.signOut()
     }
 }

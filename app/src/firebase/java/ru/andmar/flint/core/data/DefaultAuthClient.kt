@@ -11,5 +11,7 @@ interface DefaultAuthClient {
     fun getAuthState(): Flow<FlintActions>
     suspend fun signIn(authItem: AuthItem)
     suspend fun createUser(authItem: AuthItem)
+    suspend fun updateEmail(email: String)
+    suspend fun updatePassword(password: String)
     suspend fun signOut()
 }

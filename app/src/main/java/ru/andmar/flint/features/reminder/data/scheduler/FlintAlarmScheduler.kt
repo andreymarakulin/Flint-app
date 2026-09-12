@@ -17,16 +17,30 @@ class FlintAlarmScheduler(private val context: Context): AlarmScheduler {
             putExtra("EXTRA_ID", item.id)
         }
 
-        alarmManager.setExactAndAllowWhileIdle(
-            AlarmManager.RTC_WAKEUP,
-            item.reminderDate,
-            PendingIntent.getBroadcast(
-                context,
-                item.reminderId,
-                intent,
-                PendingIntent.FLAG_IMMUTABLE
+        if (item.repeat) {
+            alarmManager.setInexactRepeating(
+                AlarmManager.RTC_WAKEUP,
+                item.reminderDate,
+                item.repeatInterval,
+                PendingIntent.getBroadcast(
+                    context,
+                    item.reminderId,
+                    intent,
+                    PendingIntent.FLAG_IMMUTABLE
+                )
             )
-        )
+        } else {
+            alarmManager.setExactAndAllowWhileIdle(
+                AlarmManager.RTC_WAKEUP,
+                item.reminderDate,
+                PendingIntent.getBroadcast(
+                    context,
+                    item.reminderId,
+                    intent,
+                    PendingIntent.FLAG_IMMUTABLE
+                )
+            )
+        }
     }
 
     override fun cancel(item: ReminderDetails) {

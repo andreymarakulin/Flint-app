@@ -1,5 +1,6 @@
 package ru.andmar.flint.features.note.ui.home
 
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
@@ -20,7 +21,10 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -32,6 +36,7 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Tab
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -59,12 +64,14 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import ru.andmar.flint.R
 import ru.andmar.flint.core.ui.FlintActions
-import ru.andmar.flint.core.ui.components.DefaultLoadingDialog
-import ru.andmar.flint.core.ui.components.ErrorDialog
+import ru.andmar.flint.core.ui.components.dialog.DefaultLoadingDialog
+import ru.andmar.flint.core.ui.components.dialog.ErrorDialog
 import ru.andmar.flint.features.category.ui.components.CategoryActionsSheet
+import ru.andmar.flint.features.label.ui.components.ChoiceLabelSheet
 import ru.andmar.flint.features.note.domain.model.NoteDetails
 import ru.andmar.flint.features.note.ui.components.NoteAction
 import ru.andmar.flint.features.note.ui.components.NoteActionsSheet
+import ru.andmar.flint.features.note.ui.components.cards.NoteDetailsCard
 import ru.andmar.flint.navigation.NavigationRoutes
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -78,6 +85,11 @@ fun NoteScreen(
 
     val noteUiState = viewModel.noteUiState.collectAsStateWithLifecycle()
     val noteContentState = viewModel.noteContentState.collectAsStateWithLifecycle()
+    val labelDetailsListState = viewModel.labelDetailsListState.collectAsStateWithLifecycle()
+
+    val scope = rememberCoroutineScope()
+    val choiceLabelSheetState = rememberModalBottomSheetState()
+    var showChoiceLabelSheetState by rememberSaveable { mutableStateOf(false) }
 
     val deleteNoteSnackbarTitle = stringResource(R.string.delete_note_snackbar_title)
     val cancelNoteCategorySnackbarTitle = stringResource(R.string.cancel_title)
@@ -92,6 +104,7 @@ fun NoteScreen(
             val list = noteContentState.value.filteredCategoryDetailsList
             if (list.isNotEmpty() && page in list.indices) {
                 onChangeCategoryId(list[page].id)
+                viewModel.onActions(NoteScreenActions.UpdateSelectedCategoryDetails(list[page]))
             }
         }
     }
@@ -100,6 +113,9 @@ fun NoteScreen(
         viewModel.noteUiAction.collect { navigationEffect ->
             when(navigationEffect) {
                 is NoteUiAction.None -> {}
+                is NoteUiAction.ChoiceLabelSheet -> {
+                    showChoiceLabelSheetState = true
+                }
                 is NoteUiAction.EditNote -> {
                     onNavigationRoutes(NavigationRoutes.EditNoteScreenRoute(navigationEffect.noteId))
                 }
@@ -135,6 +151,22 @@ fun NoteScreen(
         onNavigationRoutes = onNavigationRoutes,
         onActions = viewModel::onActions
     )
+
+    if (showChoiceLabelSheetState) {
+        ChoiceLabelSheet(
+            sheetState = choiceLabelSheetState,
+            labelDetailsList = labelDetailsListState.value.labelDetailsList,
+            onClick = {
+                viewModel.onActions(
+                    NoteScreenActions.EditLabel(it)
+                )
+            }
+        ) {
+            scope.launch { choiceLabelSheetState.hide() }.invokeOnCompletion {
+                showChoiceLabelSheetState = false
+            }
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -180,6 +212,7 @@ fun NoteBody(
         PrimaryScrollableTabRow(selectedTabIndex = safeSelectedIndex) {
             noteContentState.filteredCategoryDetailsList.forEachIndexed { index, details ->
                 Tab(
+                    selectedContentColor = MaterialTheme.colorScheme.primary,
                     selected = pagerState.currentPage == index,
                     onClick = { scope.launch { pagerState.animateScrollToPage(index) } },
                     text = {
@@ -229,17 +262,37 @@ fun NoteBody(
             modifier = Modifier
                 .fillMaxSize()
         ) { pager ->
-            val noteDetailsList = remember(pager, noteContentState) {
+            val noteContentContainer = remember(pager, noteContentState) {
                 val currentCategory = noteContentState.filteredCategoryDetailsList.getOrNull(pager)
-                noteContentState.filteredNoteDetailsListByCategory[currentCategory?.id ?: ""] ?: emptyList()
+                noteContentState.filteredNoteDetailsListByCategory[currentCategory?.id ?: ""] ?: NoteContentContainer()
             }
+
 
             LazyColumn(
                 modifier = Modifier.fillMaxWidth()
             ) {
                 items(
                     key = { it.lazyKey },
-                    items = noteDetailsList
+                    items = noteContentContainer.noteDetailsList
+                ) { noteDetails ->
+                    NoteDetailsCard(
+                        modifier = Modifier.animateItem(),
+                        noteDetails = noteDetails,
+                        onClickCard = onCardClicked,
+                        onClickActions = { onActionsClicked(noteDetails) }
+                    )
+                }
+                item {
+                    AnimatedVisibility(noteContentContainer.noteDetailsListWhoDone.isNotEmpty()) {
+                        Text(
+                            text = "Выполненные",
+                            modifier = Modifier.padding(10.dp)
+                        )
+                    }
+                }
+                items(
+                    key = { it.lazyKey },
+                    items = noteContentContainer.noteDetailsListWhoDone
                 ) { noteDetails ->
                     NoteDetailsCard(
                         modifier = Modifier.animateItem(),
@@ -296,86 +349,6 @@ fun NoteBody(
             ErrorDialog(
                 message = noteUiState.flintActions.message
             ) { onActions(NoteScreenActions.DismissError) }
-        }
-    }
-}
-
-@Composable
-fun NoteDetailsCard(
-    modifier: Modifier,
-    noteDetails: NoteDetails,
-    onClickCard: (String) -> Unit,
-    onClickActions: (NoteDetails) -> Unit
-) {
-    Card(
-        onClick = { onClickCard(noteDetails.id) },
-        shape = RoundedCornerShape(20.dp),
-        modifier = modifier
-            .padding(horizontal = 10.dp)
-            .padding(vertical = 5.dp)
-            .border(
-                width = 3.dp,
-                shape = RoundedCornerShape(20.dp),
-                color = if (noteDetails.highlight) {
-                    MaterialTheme.colorScheme.primary
-                } else Color.Transparent
-            )
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            Column(Modifier.weight(1f)) {
-                if (noteDetails.title.isNotEmpty()) {
-                    Text(
-                        text = noteDetails.title,
-                        fontSize = 16.sp,
-                        maxLines = 1,
-                        fontWeight = FontWeight.Bold,
-                        overflow = TextOverflow.Ellipsis,
-                        textDecoration = if (noteDetails.done) {
-                            TextDecoration.LineThrough
-                        } else TextDecoration.None,
-                        modifier = Modifier
-                            .padding(horizontal = 10.dp)
-                            .padding(vertical = 5.dp)
-                    )
-                }
-                if (noteDetails.text.isNotEmpty()) {
-                    Text(
-                        text = noteDetails.text,
-                        fontSize = 13.sp,
-                        maxLines = 5,
-                        overflow = TextOverflow.Ellipsis,
-                        textDecoration = if (noteDetails.done) {
-                            TextDecoration.LineThrough
-                        } else TextDecoration.None,
-                        modifier = Modifier
-                            .padding(horizontal = 10.dp)
-                            .padding(bottom = 5.dp)
-                    )
-                }
-            }
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                if (noteDetails.fix) {
-                    Icon(
-                        painter = painterResource(R.drawable.keep),
-                        contentDescription = null,
-                        //modifier = Modifier.padding(3.dp)
-                    )
-                }
-                IconButton(
-                    onClick = { onClickActions(noteDetails) }
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.more_vert),
-                        contentDescription = null,
-                        modifier = Modifier.padding(3.dp)
-                    )
-                }
-            }
         }
     }
 }

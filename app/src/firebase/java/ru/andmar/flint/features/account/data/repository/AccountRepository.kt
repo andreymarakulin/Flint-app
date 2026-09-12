@@ -29,7 +29,12 @@ class AccountRepository(
 
     suspend fun signUp(authDetails: AuthDetails) = authClient.createUser(authDetails.toAuthItem())
 
+    suspend fun updateEmail(email: String) = authClient.updateEmail(email)
+    suspend fun updatePassword(password: String) = authClient.updateEmail(password)
+
     suspend fun signOut() = authClient.signOut()
+
+
 
 
     suspend fun createUser() = firestoreClient.setUserItem()

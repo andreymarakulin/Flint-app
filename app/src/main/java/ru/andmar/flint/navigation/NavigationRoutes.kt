@@ -13,6 +13,7 @@ import kotlinx.serialization.Serializable
     @Serializable data class DetailsScreenRoute(val noteId: String): NavigationRoutes
     @Serializable data class EntryTodoScreenRoute(val noteId: String): NavigationRoutes
     @Serializable data class EditTodoScreenRoute(val todoId: String): NavigationRoutes
+    @Serializable object LabelScreenRoute: NavigationRoutes
     @Serializable object EntryLabelScreenRoute: NavigationRoutes
     @Serializable data class EditLabelScreenRoute(val labelId: String): NavigationRoutes
     @Serializable object EntryReminderScreenRoute: NavigationRoutes
@@ -20,6 +21,10 @@ import kotlinx.serialization.Serializable
     @Serializable object AccountScreenRoute: NavigationRoutes
     @Serializable object SignInScreenRoute: NavigationRoutes
     @Serializable object SignUpScreenRoute: NavigationRoutes
+    @Serializable object UpdateEmailScreenRoute: NavigationRoutes
+    @Serializable object UpdatePasswordScreenRoute: NavigationRoutes
     @Serializable object SettingsScreenRoute: NavigationRoutes
+    @Serializable object ArchiveScreenRoute: NavigationRoutes
+    @Serializable object BasketScreenRoute: NavigationRoutes
     @Serializable object AboutAppScreenRoute: NavigationRoutes
 }

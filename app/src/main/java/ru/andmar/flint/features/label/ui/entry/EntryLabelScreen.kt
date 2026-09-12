@@ -8,26 +8,26 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 import ru.andmar.flint.R
 import ru.andmar.flint.core.ui.FlintActions
-import ru.andmar.flint.core.ui.components.DefaultButton
-import ru.andmar.flint.core.ui.components.DefaultLoadingDialog
-import ru.andmar.flint.core.ui.components.DefaultScreenText
+import ru.andmar.flint.core.ui.components.dialog.DefaultLoadingDialog
 import ru.andmar.flint.core.ui.components.DefaultTextField
 import ru.andmar.flint.core.ui.components.DefaultTopAppBar
-import ru.andmar.flint.core.ui.components.ErrorDialog
+import ru.andmar.flint.core.ui.components.button.DefaultButton
+import ru.andmar.flint.core.ui.components.dialog.ErrorDialog
+import ru.andmar.flint.core.ui.components.text.DefaultScreenText
 import ru.andmar.flint.features.label.domain.model.LabelDetails
-
-@Serializable
-object EntryLabelScreenRoute
 
 @Composable
 fun EntryLabelScreen(
     viewModel: EntryLabelViewModel = koinViewModel(),
     onNavBack: () -> Unit
 ) {
+
+    val entryLabelUiState = viewModel.entryLabelUiState.collectAsStateWithLifecycle()
 
     Scaffold(
         topBar = {
@@ -41,7 +41,7 @@ fun EntryLabelScreen(
     ) { innerPadding ->
         EntryLabelBody(
             innerPaddingValues = innerPadding,
-            entryLabelUiState = viewModel.entryLabelUiState,
+            entryLabelUiState = entryLabelUiState.value,
             onSuccess = onNavBack
         ) { viewModel.onActions(it) }
     }
@@ -59,17 +59,14 @@ fun EntryLabelBody(
             .fillMaxSize()
             .padding(innerPaddingValues)
     ) {
-       // DefaultScreenText(stringResource(R.string.sign_in_screen_text))
+        DefaultScreenText(stringResource(R.string.entry_label_title))
         LabelDetailsForm(
             labelDetails = entryLabelUiState.labelDetails
         ) { onActions(EntryLabelScreenActions.UpdateLabelScreenDetails(it)) }
-        /*
         DefaultButton(
-            title = stringResource(R.string.continue_button),
+            title = stringResource(R.string.entry_label_button),
             enabled = entryLabelUiState.isAction
         ) { onActions(EntryLabelScreenActions.CreateLabel) }
-
-         */
     }
 
     when(entryLabelUiState.flintActions) {
@@ -93,7 +90,12 @@ fun LabelDetailsForm(
         DefaultTextField(
             value = labelDetails.title,
             maxLiens = 1,
-            label = stringResource(R.string.email_label),
+            label = stringResource(R.string.title_label),
         ) { updateLabelDetails(labelDetails.copy(title = it)) }
+        DefaultTextField(
+            value = labelDetails.text,
+            maxLiens = 1,
+            label = stringResource(R.string.text_label),
+        ) { updateLabelDetails(labelDetails.copy(text = it)) }
     }
 }

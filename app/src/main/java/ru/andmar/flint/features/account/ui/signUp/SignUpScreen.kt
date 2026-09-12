@@ -17,11 +17,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
 import ru.andmar.flint.R
 import ru.andmar.flint.core.ui.FlintActions
-import ru.andmar.flint.core.ui.components.DefaultButton
-import ru.andmar.flint.core.ui.components.DefaultLoadingDialog
-import ru.andmar.flint.core.ui.components.DefaultScreenText
+import ru.andmar.flint.core.ui.components.button.DefaultButton
+import ru.andmar.flint.core.ui.components.dialog.DefaultLoadingDialog
+import ru.andmar.flint.core.ui.components.text.DefaultScreenText
 import ru.andmar.flint.core.ui.components.DefaultTopAppBar
-import ru.andmar.flint.core.ui.components.ErrorDialog
+import ru.andmar.flint.core.ui.components.dialog.ErrorDialog
 import ru.andmar.flint.features.account.ui.signIn.AuthDetailsForm
 
 @OptIn(ExperimentalMaterial3Api::class)

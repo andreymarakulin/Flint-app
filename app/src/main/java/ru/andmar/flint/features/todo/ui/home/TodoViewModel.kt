@@ -1,41 +1,88 @@
 package ru.andmar.flint.features.todo.ui.home
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import ru.andmar.flint.core.ui.FlintActions
-import ru.andmar.flint.features.note.ui.home.NoteUiAction
+import ru.andmar.flint.features.label.domain.model.LabelDetails
+import ru.andmar.flint.features.label.domain.usecase.LabelUseCase
+import ru.andmar.flint.features.label.ui.home.LabelDetailsListState
 import ru.andmar.flint.features.todo.domain.model.TodoDetails
 import ru.andmar.flint.features.todo.domain.usecase.TodoActionsUseCase
 import ru.andmar.flint.features.todo.domain.usecase.TodoUseCase
 import ru.andmar.flint.features.todo.ui.components.TodoAction
+import kotlin.collections.map
+import kotlin.collections.toSet
 
 class TodoViewModel(
     private val todoUseCase: TodoUseCase,
-    private val todoActionsUseCase: TodoActionsUseCase
+    private val todoActionsUseCase: TodoActionsUseCase,
+    private val labelUseCase: LabelUseCase
 ): ViewModel() {
 
-    val todoDetailsState: StateFlow<TodoDetailsState> =
-        todoUseCase.getTodos().map { todoItems ->
-            TodoDetailsState(
-                todoItems.filter{ !it.deleted }.sortedWith(
+    val choiceLabelDetailsList: StateFlow<List<LabelDetails>> =
+        labelUseCase.getLabels().map { labelDetails ->
+            labelDetails.filter { it.choice }
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000L),
+            initialValue = emptyList()
+        )
+
+    val todoDetailsList: StateFlow<List<TodoDetails>> =
+        todoUseCase.getTodos().map { todoDetails ->
+            todoDetails.filter { !it.archive }.filter { !it.deleted }.sortedWith(
                 compareByDescending<TodoDetails> { it.fix }
                     .thenByDescending { it.updateTime }
+            )
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000L),
+            initialValue = emptyList()
+        )
+
+    val todoDetailsState: StateFlow<TodoDetailsState> = combine(
+        choiceLabelDetailsList,
+        todoDetailsList
+    ) { labels, todos ->
+        val filterTodoByLabels = if (labels.isNotEmpty()) {
+            val selectedLabelIds = labels.map { it.id }.toSet()
+            todos.filter { it.labelDetails.id in selectedLabelIds }
+        } else todos
+
+        val (done, active) = filterTodoByLabels.partition { it.done }
+
+        TodoDetailsState(
+            todoDetailsList = active,
+            todoDetailsDoneList = done
+        )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = TodoDetailsState()
+    )
+
+    val labelDetailsListState: StateFlow<LabelDetailsListState> =
+        labelUseCase.getLabels().map { labelDetails ->
+            LabelDetailsListState(
+                labelDetails.filter { !it.archive }.filter { !it.deleted }.sortedWith(
+                    compareByDescending<LabelDetails> { it.fix }
+                        .thenByDescending { it.updateTime }
                 )
             )
         }.stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(),
-            initialValue = TodoDetailsState()
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = LabelDetailsListState()
         )
 
     private val _todoUiState = MutableStateFlow(TodoUiState())
@@ -68,6 +115,16 @@ class TodoViewModel(
                             todoActionsUseCase.highlightTodo(todoAction.todoDetails)
                         }
                     }
+                    is TodoAction.ArchiveTodo -> {
+                        flintActions {
+                            todoActionsUseCase.archiveTodo(todoAction.todoDetails)
+                        }
+                    }
+                    is TodoAction.EditLabel -> {
+                        viewModelScope.launch {
+                            _todoUiAction.send(TodoUiAction.ChoiceLabelSheet)
+                        }
+                    }
                     is TodoAction.EditTodo -> {
                         viewModelScope.launch {
                             _todoUiAction.send(
@@ -88,6 +145,14 @@ class TodoViewModel(
                             )
                         }
                     }
+                }
+            }
+            is TodoScreenActions.EditLabel -> {
+                flintActions {
+                    todoActionsUseCase.editLabel(
+                        _todoUiState.value.selectedTodoDetails,
+                        todoScreenActions.labelDetails
+                    )
                 }
             }
             is TodoScreenActions.DismissError -> {

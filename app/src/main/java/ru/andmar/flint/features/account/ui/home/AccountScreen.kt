@@ -3,10 +3,8 @@ package ru.andmar.flint.features.account.ui.home
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Card
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,7 +17,7 @@ import ru.andmar.flint.R
 import ru.andmar.flint.core.ui.ModalSheetItem
 import ru.andmar.flint.core.ui.components.DefaultModalSheetItem
 import ru.andmar.flint.core.ui.components.DefaultTopAppBar
-import ru.andmar.flint.features.account.components.UserInfoCard
+import ru.andmar.flint.features.account.ui.components.UserInfoCard
 import ru.andmar.flint.features.settings.domain.UserDetails
 import ru.andmar.flint.features.settings.ui.components.AccountAction
 import kotlin.collections.forEach
@@ -55,9 +53,8 @@ fun AccountBody(
     accountUiState: AccountUiState
 ) {
     LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(contentPaddingValues)
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = contentPaddingValues
     ) {
         item {
             UserInfoCard(accountUiState.userDetails)

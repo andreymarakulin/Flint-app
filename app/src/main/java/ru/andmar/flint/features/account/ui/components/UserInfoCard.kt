@@ -1,4 +1,4 @@
-package ru.andmar.flint.features.account.components
+package ru.andmar.flint.features.account.ui.components
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding

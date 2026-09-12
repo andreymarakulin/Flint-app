@@ -1,13 +1,15 @@
 package ru.andmar.flint.features.note.data
 
+import ru.andmar.flint.features.label.domain.model.LabelDetails
 import ru.andmar.flint.features.note.data.model.NoteItem
 import ru.andmar.flint.features.note.domain.model.NoteDetails
+import ru.andmar.flint.features.reminder.domain.model.ReminderDetails
 
 fun NoteDetails.toNoteItem(): NoteItem = NoteItem(
     id = id,
     categoryId = categoryId,
-    labelId = labelId,
-    reminderId = reminderId,
+    labelId = this.labelDetails.id,
+    reminderId = this.reminderDetails.id,
     title = title,
     text = text,
     color = color,
@@ -20,11 +22,14 @@ fun NoteDetails.toNoteItem(): NoteItem = NoteItem(
     updateTime = System.currentTimeMillis()
 )
 
-fun NoteItem.toNoteDetails(): NoteDetails = NoteDetails(
+suspend fun NoteItem.toNoteDetails(
+    getLabel: suspend (String) -> LabelDetails,
+    getReminder: suspend (String) -> ReminderDetails
+): NoteDetails = NoteDetails(
     id = id,
     categoryId = categoryId,
-    labelId = labelId,
-    reminderId = reminderId,
+    labelDetails = getLabel(this.labelId),
+    reminderDetails = getReminder(this.reminderId),
     title = title,
     text = text,
     color = color,

@@ -1,12 +1,11 @@
-package ru.andmar.flint.core.ui.components
+package ru.andmar.flint.core.ui.components.sheet
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
 import androidx.compose.runtime.Composable
 import ru.andmar.flint.core.ui.ModalSheetItem
-import ru.andmar.flint.navigation.NavigationRoutes
-import ru.andmar.flint.ui.homeMenuSheetItems
+import ru.andmar.flint.core.ui.components.DefaultModalSheetItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

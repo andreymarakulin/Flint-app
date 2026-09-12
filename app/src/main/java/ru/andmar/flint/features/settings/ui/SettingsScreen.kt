@@ -1,13 +1,11 @@
 package ru.andmar.flint.features.settings.ui
 
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Card
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -18,10 +16,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import org.koin.androidx.compose.koinViewModel
 import ru.andmar.flint.R
-import ru.andmar.flint.core.ui.components.DefaultButton
-import ru.andmar.flint.core.ui.components.DefaultTopAppBar
-import ru.andmar.flint.features.account.components.UserInfoCard
-import ru.andmar.flint.features.settings.domain.UserDetails
+import ru.andmar.flint.features.account.ui.components.UserInfoCard
 import ru.andmar.flint.navigation.NavigationRoutes
 
 @Composable

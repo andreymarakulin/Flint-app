@@ -13,6 +13,7 @@ data class LabelDetails(
     override val highlight: Boolean = false,
     val deleted: Boolean = false,
     val archive: Boolean = false,
+    val choice: Boolean = false,
     override val createTime: Long = 0L,
     override val updateTime: Long = 0L,
     val lazyKey: Int = Random.nextInt(Int.MAX_VALUE)

@@ -7,15 +7,16 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DatePickerState
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TimePicker
@@ -24,24 +25,24 @@ import androidx.compose.material3.TimePickerState
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kotlinx.serialization.Serializable
 import org.koin.androidx.compose.koinViewModel
 import ru.andmar.flint.R
 import ru.andmar.flint.core.ui.FlintActions
-import ru.andmar.flint.core.ui.components.DefaultButton
-import ru.andmar.flint.core.ui.components.DefaultLoadingDialog
-import ru.andmar.flint.core.ui.components.DefaultScreenText
+import ru.andmar.flint.core.ui.components.button.DefaultButton
+import ru.andmar.flint.core.ui.components.dialog.DefaultLoadingDialog
+import ru.andmar.flint.core.ui.components.text.DefaultScreenText
 import ru.andmar.flint.core.ui.components.DefaultTextField
 import ru.andmar.flint.core.ui.components.DefaultTopAppBar
-import ru.andmar.flint.core.ui.components.ErrorDialog
+import ru.andmar.flint.core.ui.components.dialog.ErrorDialog
 import ru.andmar.flint.features.reminder.domain.model.ReminderDetails
 import ru.andmar.flint.features.reminder.domain.model.dateToUiDate
 import ru.andmar.flint.features.reminder.domain.model.hoursAndMinutesToUiTime
@@ -82,6 +83,8 @@ fun EntryReminderBody(
     val datePickerDialog = rememberSaveable { mutableStateOf(false) }
     val timePickerDialog = rememberSaveable { mutableStateOf(false) }
 
+    var expanded by rememberSaveable { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -100,6 +103,57 @@ fun EntryReminderBody(
                 timePickerDialog.value = true
             }
         )
+        Card(
+            modifier = Modifier.padding(10.dp)
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "Is repeat",
+                    modifier = Modifier.padding(10.dp)
+                )
+                Switch(
+                    checked = entryReminderUiState.reminderDetails.repeat,
+                    onCheckedChange = {}
+                )
+            }
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            Card(
+                onClick = { expanded = true  },
+                modifier = Modifier
+                    .fillMaxWidth(0.4f)
+                    .padding(10.dp)
+            ) {
+                Text(
+                    text = "Day",
+                    modifier = Modifier.padding(10.dp)
+                )
+            }
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                DropdownMenuItem(
+                    text = { Text("Option 1") },
+                    onClick = { /* Do something... */ }
+                )
+                DropdownMenuItem(
+                    text = { Text("Option 2") },
+                    onClick = { /* Do something... */ }
+                )
+            }
+            DefaultTextField(
+                value = "",
+                maxLiens = 1,
+                label = stringResource(R.string.title_label),
+            ) { }
+        }
         DefaultButton(
             title = stringResource(R.string.entry_reminder_button),
             enabled = entryReminderUiState.isAction

@@ -42,6 +42,8 @@
     <string name="highlight_title">Highlight</string>
     <string name="unhighlight_title">Unhighlight</string>
 
+    <string name="label_title">Label</string>
+
     <string name="edit_title">Edit</string>
     <string name="delete_title">Delete</string>
 
@@ -87,6 +89,22 @@
     <string name="edit_note_title">Edit your note</string>
     <string name="edit_note_button">Edit note</string>
 
+    <!--LabelScreen-->
+    <string name="labels_title">Labels</string>
+    <string name="delete_lael_snackbar_title">You delete label</string>
+    <string name="move_to_basket_label_snackbar_title">Label moving to basket</string>
+
+
+
+
+    <!--EntryLabelScreen-->
+    <string name="entry_label_title">Create a new label</string>
+    <string name="entry_label_button">Create label</string>
+
+    <!--EditLabelScreen-->
+    <string name="edit_label_title">Edit your label</string>
+    <string name="edit_label_button">Edit label</string>
+
     <!--ReminderScreen-->
     <string name="delete_reminder_snackbar_title">You delete reminder</string>
     <string name="move_to_basket_reminder_snackbar_title">Reminder moving to basket</string>
@@ -114,6 +132,7 @@
     <string name="edit_todo_title">Edit your todo</string>
     <string name="edit_todo_button">Edit todo</string>
 
+
     <!--SettingsScreen-->
     <string name="account_manage_button">Account manage</string>
     <string name="archive_title">Archive</string>
@@ -123,8 +142,6 @@
     <string name="basket_manage_button">Basket manage</string>
 
     <string name="about_app_title">About app</string>
-
-    <!--ArchiveScreen-->
 
 
 

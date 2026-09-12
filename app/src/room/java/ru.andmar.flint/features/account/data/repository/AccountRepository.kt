@@ -18,6 +18,9 @@ class AccountRepository(private val flintDao: FlintDao) {
 
     suspend fun signUp(authDetails: AuthDetails) {}
 
+    suspend fun updateEmail(email: String) {}
+    suspend fun updatePassword(password: String) {}
+
     suspend fun signOut() {}
 
     suspend fun createUser() {}

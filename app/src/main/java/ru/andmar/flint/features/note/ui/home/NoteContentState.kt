@@ -5,5 +5,10 @@ import ru.andmar.flint.features.note.domain.model.NoteDetails
 
 data class NoteContentState(
     val filteredCategoryDetailsList: List<CategoryDetails> = emptyList(),
-    val filteredNoteDetailsListByCategory: Map<String, List<NoteDetails>> = emptyMap()
+    val filteredNoteDetailsListByCategory: Map<String, NoteContentContainer> = emptyMap()
+)
+
+data class NoteContentContainer(
+    val noteDetailsList: List<NoteDetails> = emptyList(),
+    val noteDetailsListWhoDone: List<NoteDetails> = emptyList(),
 )

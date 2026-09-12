@@ -8,13 +8,18 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import org.koin.compose.koinInject
 import ru.andmar.flint.features.account.data.repository.AccountRepository
+import ru.andmar.flint.features.account.ui.edit.email.UpdateEmailScreen
+import ru.andmar.flint.features.account.ui.edit.password.UpdatePasswordScreen
 import ru.andmar.flint.features.account.ui.home.AccountScreen
 import ru.andmar.flint.features.account.ui.signIn.SignInScreen
 import ru.andmar.flint.features.account.ui.signUp.SignUpScreen
+import ru.andmar.flint.features.archive.ui.ArchiveScreen
+import ru.andmar.flint.features.basket.ui.BasketScreen
 import ru.andmar.flint.features.category.ui.edit.EditCategoryScreen
 import ru.andmar.flint.features.category.ui.entry.EntryCategoryScreen
 import ru.andmar.flint.features.label.ui.edit.EditLabelScreen
 import ru.andmar.flint.features.label.ui.entry.EntryLabelScreen
+import ru.andmar.flint.features.label.ui.home.LabelScreen
 import ru.andmar.flint.features.note.ui.details.DetailsScreen
 import ru.andmar.flint.features.note.ui.edit.EditNoteScreen
 import ru.andmar.flint.features.note.ui.entry.EntryNoteScreen
@@ -24,7 +29,7 @@ import ru.andmar.flint.features.settings.ui.AboutAppScreen
 import ru.andmar.flint.features.settings.ui.SettingsScreen
 import ru.andmar.flint.features.todo.ui.edit.EditTodoScreen
 import ru.andmar.flint.features.todo.ui.entry.EntryTodoScreen
-import ru.andmar.flint.ui.HomeScreen
+import ru.andmar.flint.ui.main.HomeScreen
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -127,6 +132,11 @@ fun NavigationClient() {
             EditTodoScreen { navController.navigateUp() }
         }
         //Label
+        composable<NavigationRoutes.LabelScreenRoute> {
+            LabelScreen(
+                onNavigationRoutes = { navController.navigate(it) }
+            ) { navController.navigateUp() }
+        }
         composable<NavigationRoutes.EntryLabelScreenRoute> {
             EntryLabelScreen() { navController.navigateUp() }
         }
@@ -157,9 +167,24 @@ fun NavigationClient() {
         composable<NavigationRoutes.SignUpScreenRoute> {
             SignUpScreen { navController.navigateUp() }
         }
+        composable<NavigationRoutes.UpdateEmailScreenRoute> {
+            UpdateEmailScreen { navController.navigateUp() }
+        }
+        composable<NavigationRoutes.UpdatePasswordScreenRoute> {
+            UpdatePasswordScreen { navController.navigateUp() }
+        }
+
+        //Settings
 
         composable<NavigationRoutes.SettingsScreenRoute> {
             SettingsScreen { navController.navigateUp() }
+        }
+
+        composable<NavigationRoutes.ArchiveScreenRoute> {
+            ArchiveScreen { navController.navigateUp() }
+        }
+        composable<NavigationRoutes.BasketScreenRoute> {
+            BasketScreen { navController.navigateUp() }
         }
 
         //About app

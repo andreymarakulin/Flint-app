@@ -26,7 +26,7 @@ class CategoryViewModel(
     val categoryDetailsListState: StateFlow<CategoryDetailsListState> =
         categoryUseCase.getCategoryDetailsList().map { categoryDetails ->
             CategoryDetailsListState(
-                categoryDetails.filter{ !it.deleted }.sortedWith(
+                categoryDetails.filter { !it.archive }.filter{ !it.deleted }.sortedWith(
                     compareByDescending<CategoryDetails> { it.fix }
                         .thenByDescending { it.updateTime }
                 )
@@ -60,6 +60,11 @@ class CategoryViewModel(
                     is CategoryAction.HighlightCategory -> {
                         flintActions {
                             categoryActionsUseCase.highlightCategory(categoryAction.categoryDetails)
+                        }
+                    }
+                    is CategoryAction.ArchiveCategory -> {
+                        flintActions {
+                            categoryActionsUseCase.archiveCategory(categoryAction.categoryDetails)
                         }
                     }
                     is CategoryAction.EditCategory -> {

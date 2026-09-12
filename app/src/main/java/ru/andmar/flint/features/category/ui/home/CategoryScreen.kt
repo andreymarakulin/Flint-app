@@ -44,12 +44,12 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import ru.andmar.flint.R
 import ru.andmar.flint.core.ui.FlintActions
-import ru.andmar.flint.core.ui.components.DefaultDetails
-import ru.andmar.flint.core.ui.components.DefaultLoadingDialog
-import ru.andmar.flint.core.ui.components.ErrorDialog
+import ru.andmar.flint.core.ui.components.dialog.DefaultLoadingDialog
+import ru.andmar.flint.core.ui.components.dialog.ErrorDialog
 import ru.andmar.flint.features.category.domain.model.CategoryDetails
 import ru.andmar.flint.features.category.ui.components.CategoryAction
 import ru.andmar.flint.features.category.ui.components.CategoryActionsSheet
+import ru.andmar.flint.features.category.ui.components.cards.CategoryDetailsCard
 import ru.andmar.flint.navigation.NavigationRoutes
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -157,64 +157,6 @@ fun CategoryBody(
             ErrorDialog(
                 message = categoryUiState.flintActions.message
             ) { onActions(CategoryScreenActions.DismissError) }
-        }
-    }
-}
-
-@Composable
-fun CategoryDetailsCard(
-    modifier: Modifier,
-    categoryDetails: CategoryDetails,
-    onClick: () -> Unit
-) {
-    Card(
-        shape = RoundedCornerShape(20.dp),
-        modifier = modifier
-            .padding(horizontal = 10.dp)
-            .padding(vertical = 5.dp)
-            .border(
-                width = 3.dp,
-                shape = RoundedCornerShape(20.dp),
-                color = if (categoryDetails.highlight) {
-                    MaterialTheme.colorScheme.primary
-                } else Color.Transparent
-            )
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .fillMaxWidth()
-        ) {
-            Text(
-                text = categoryDetails.title,
-                fontSize = 16.sp,
-                maxLines = 1,
-                fontWeight = FontWeight.Bold,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
-                    .padding(horizontal = 10.dp)
-                    .padding(vertical = 5.dp)
-                    .weight(1f)
-            )
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                if (categoryDetails.fix) {
-                    Icon(
-                        painter = painterResource(R.drawable.keep),
-                        contentDescription = null,
-                        //modifier = Modifier.padding(3.dp)
-                    )
-                }
-                IconButton(
-                    onClick = onClick
-                ) {
-                    Icon(
-                        painter = painterResource(R.drawable.more_vert),
-                        contentDescription = null,
-                        modifier = Modifier.padding(3.dp)
-                    )
-                }
-            }
         }
     }
 }

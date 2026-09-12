@@ -5,10 +5,12 @@ import ru.andmar.flint.features.reminder.domain.model.ReminderDetails
 
 interface LabelAction {
 
-    data class FixReminder(val labelDetails: LabelDetails) : LabelAction
-    data class DoneReminder(val labelDetails: LabelDetails) : LabelAction
-    data class HighlightReminder(val labelDetails: LabelDetails) : LabelAction
-    data class EditReminder(val labelId: String) : LabelAction
-    data class DeleteReminder(val labelDetails: LabelDetails) : LabelAction
-    data class RestoreReminder(val labelDetails: LabelDetails) : LabelAction
+    data class FixLabel(val labelDetails: LabelDetails) : LabelAction
+    data class DoneLabel(val labelDetails: LabelDetails) : LabelAction
+    data class HighlightLabel(val labelDetails: LabelDetails) : LabelAction
+    data class ArchiveLabel(val labelDetails: LabelDetails) : LabelAction
+    data class ChoiceLabel(val labelDetails: LabelDetails) : LabelAction
+    data class EditLabel(val labelId: String) : LabelAction
+    data class DeleteLabel(val labelDetails: LabelDetails) : LabelAction
+    data class RestoreLabel(val labelDetails: LabelDetails) : LabelAction
 }

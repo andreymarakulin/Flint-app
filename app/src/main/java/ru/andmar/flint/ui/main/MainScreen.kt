@@ -1,11 +1,21 @@
-package ru.andmar.flint.ui
+package ru.andmar.flint.ui.main
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExtendedFloatingActionButton
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarDefaults
 import androidx.compose.material3.NavigationBarItem
@@ -14,6 +24,7 @@ import androidx.compose.material3.SheetState
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -24,8 +35,13 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination.Companion.hasRoute
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -33,10 +49,11 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
+import ru.andmar.flint.BuildConfig
 import ru.andmar.flint.R
 import ru.andmar.flint.core.ui.ModalSheetItem
-import ru.andmar.flint.core.ui.components.DefaultMenuSheet
-import ru.andmar.flint.core.ui.components.DefaultTopAppBar
+import ru.andmar.flint.core.ui.components.sheet.DefaultMenuSheet
 import ru.andmar.flint.features.category.ui.home.CategoryScreen
 import ru.andmar.flint.features.note.ui.home.NoteScreen
 import ru.andmar.flint.features.reminder.ui.home.ReminderScreen
@@ -76,18 +93,21 @@ fun navigationBarItemList(categoryId: String) = listOf(
         title = R.string.reminders_screen_title,
         icon = R.drawable.reminder,
         route = MainScreenNavigationRoutes.ReminderScreenRoute,
-        entryRoute = NavigationRoutes.EntryNoteScreenRoute("")
+        entryRoute = NavigationRoutes.EntryReminderScreenRoute
     )
 
      */
 )
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
+    viewModel: MainViewModel = koinViewModel(),
     onNavigationRoutes: (NavigationRoutes) -> Unit
 ) {
+
+    val labelDetailsListState = viewModel.choiceLabelDetailsListState.collectAsStateWithLifecycle()
+    val mainUiState = viewModel.mainUiState.collectAsStateWithLifecycle()
 
     val navController = rememberNavController()
     val snackbarHostState = remember { SnackbarHostState() }
@@ -103,32 +123,65 @@ fun HomeScreen(
     val navigationBarItemList = navigationBarItemList(categoryId)
     val currentNavigationBarItem = navigationBarItemList[selectedNavigationBarIndex]
 
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
     Scaffold(
+        modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
         topBar = {
-            DefaultTopAppBar(
-                title = stringResource(currentNavigationBarItem.title),
-                //navIcon = R.drawable.label,
-                navDes = null,
-                onNavIcon = {},
-                //actionsIcon = R.drawable.more_vert,
-                actionsDes = null,
-                onActions = { isShowHomeMenuSheet = true }
-            )
+            Column {
+                CenterAlignedTopAppBar(
+                    /*
+                    colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        titleContentColor = MaterialTheme.colorScheme.primary,
+                    ),
+
+                     */
+                    title = {
+                        AnimatedContent(currentNavigationBarItem.title) { title ->
+                            Text(
+                                text = stringResource(title),
+                                fontWeight = FontWeight.ExtraBold
+                            )
+                        }
+                    },
+                    navigationIcon = {
+                        IconButton(
+                            onClick = { onNavigationRoutes(NavigationRoutes.LabelScreenRoute) }
+                        ) { Icon(painterResource(R.drawable.label), null) }
+                    },
+                    actions = {
+                        IconButton(
+                            onClick = { isShowHomeMenuSheet = true }
+                        ) { Icon(painterResource(R.drawable.more_vert), null) }
+                    },
+                    scrollBehavior = scrollBehavior
+                )
+                AnimatedVisibility(labelDetailsListState.value.labelDetailsList.isNotEmpty()) {
+                    LazyRow(modifier = Modifier.fillMaxWidth()) {
+                        items(labelDetailsListState.value.labelDetailsList) { labelDetails ->
+                            FilterChip(
+                                selected = true,
+                                onClick = { viewModel.onActions(MainScreenActions.RemoveChoiceLabelDetails(labelDetails)) },
+                                label = { Text(labelDetails.title) },
+                                trailingIcon = { Icon(painterResource(R.drawable.close), null) },
+                                modifier = Modifier.padding(horizontal = 5.dp)
+                            )
+                        }
+                    }
+                }
+            }
         },
         floatingActionButton = {
-            FloatingActionButton(
-                onClick = { onNavigationRoutes(currentNavigationBarItem.entryRoute) }
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.add),
-                    contentDescription = null
-                )
-            }
-
+            FloatingActionButton(onClick = { onNavigationRoutes(currentNavigationBarItem.entryRoute) },
+            ) { Icon(painterResource(R.drawable.add),null) }
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
-            NavigationBar(windowInsets = NavigationBarDefaults.windowInsets) {
+            NavigationBar(
+                windowInsets = NavigationBarDefaults.windowInsets,
+                //containerColor = MaterialTheme.colorScheme.primaryContainer
+            ) {
                 navigationBarItemList.forEachIndexed { index, destination ->
                     val isSelected = currentDestination?.hasRoute(destination.route::class) == true
 
@@ -146,7 +199,13 @@ fun HomeScreen(
                                 contentDescription = null
                             )
                         },
-                        label = { Text(stringResource(destination.title)) }
+                        label = {
+                            Text(
+                                text = stringResource(destination.title),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
                     )
                 }
             }
@@ -220,7 +279,6 @@ fun MainScreenMenuSheet(
     onNavigationRoutes: (NavigationRoutes) -> Unit,
     onDismiss: () -> Unit
 ) {
-
     DefaultMenuSheet(
         sheetState = sheetState,
         menuSheetItems = homeMenuSheetItems(onNavigationRoutes),
@@ -228,25 +286,57 @@ fun MainScreenMenuSheet(
     )
 }
 
-fun homeMenuSheetItems(onNavigationRoutes: (NavigationRoutes) -> Unit): List<ModalSheetItem> = listOf(
-    ModalSheetItem(
-        title = R.string.account_title,
-        icon = R.drawable.account_circle
-    ) {  },
-    ModalSheetItem(
-        title = R.string.archive_title,
-        icon = R.drawable.archive
-    ) {  },
-    ModalSheetItem(
-        title = R.string.basket_title,
-        icon = R.drawable.delete
-    ) {  },
-    ModalSheetItem(
-        title = R.string.settings_screen_title,
-        icon = R.drawable.settings
-    ) {  },
-    ModalSheetItem(
-        title = R.string.about_app_title,
-        icon = R.drawable.info
-    ) {  }
-)
+fun homeMenuSheetItems(onNavigationRoutes: (NavigationRoutes) -> Unit): List<ModalSheetItem> {
+    return if (BuildConfig.FLAVOR == "firebase") {
+        listOf(
+            /*
+            ModalSheetItem(
+                title = R.string.account_title,
+                icon = R.drawable.account_circle
+            ) { },
+
+             */
+            ModalSheetItem(
+                title = R.string.archive_title,
+                icon = R.drawable.archive
+            ) { onNavigationRoutes(NavigationRoutes.ArchiveScreenRoute) },
+            /*
+            ModalSheetItem(
+                title = R.string.basket_title,
+                icon = R.drawable.delete
+            ) { onNavigationRoutes(NavigationRoutes.BasketScreenRoute) },
+            ModalSheetItem(
+                title = R.string.settings_screen_title,
+                icon = R.drawable.settings
+            ) { },
+            ModalSheetItem(
+                title = R.string.about_app_title,
+                icon = R.drawable.info
+            ) { }
+
+             */
+        )
+    } else {
+        listOf(
+            ModalSheetItem(
+                title = R.string.archive_title,
+                icon = R.drawable.archive
+            ) { onNavigationRoutes(NavigationRoutes.ArchiveScreenRoute) },
+            /*
+            ModalSheetItem(
+                title = R.string.basket_title,
+                icon = R.drawable.delete
+            ) { onNavigationRoutes(NavigationRoutes.BasketScreenRoute) },
+            ModalSheetItem(
+                title = R.string.settings_screen_title,
+                icon = R.drawable.settings
+            ) { },
+            ModalSheetItem(
+                title = R.string.about_app_title,
+                icon = R.drawable.info
+            ) { }
+
+             */
+        )
+    }
+}

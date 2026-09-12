@@ -13,6 +13,7 @@ fun LabelDetails.toLabelItem(): LabelItem = LabelItem(
     highlight = highlight,
     deleted = deleted,
     archive = archive,
+    choice = choice,
     createTime = createTime,
     updateTime = System.currentTimeMillis()
 )
@@ -27,6 +28,7 @@ fun LabelItem.toLabelDetails(): LabelDetails = LabelDetails(
     highlight = highlight,
     deleted = deleted,
     archive = archive,
+    choice = choice,
     createTime = createTime,
     updateTime = updateTime
 )

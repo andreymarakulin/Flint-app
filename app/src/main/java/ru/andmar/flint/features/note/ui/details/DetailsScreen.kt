@@ -1,9 +1,9 @@
 package ru.andmar.flint.features.note.ui.details
 
+import android.util.Log
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -13,6 +13,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.InputChip
@@ -34,7 +35,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -50,18 +50,17 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 import ru.andmar.flint.R
 import ru.andmar.flint.core.ui.FlintActions
-import ru.andmar.flint.core.ui.components.DefaultLoadingDialog
 import ru.andmar.flint.core.ui.components.DefaultTopAppBar
-import ru.andmar.flint.core.ui.components.ErrorDialog
+import ru.andmar.flint.core.ui.components.dialog.DefaultLoadingDialog
+import ru.andmar.flint.core.ui.components.dialog.ErrorDialog
 import ru.andmar.flint.features.note.ui.components.NoteAction
 import ru.andmar.flint.features.note.ui.components.NoteActionsSheet
-import ru.andmar.flint.features.note.ui.home.NoteScreenActions
-import ru.andmar.flint.features.note.ui.home.NoteUiAction
 import ru.andmar.flint.features.todo.domain.model.TodoDetails
 import ru.andmar.flint.features.todo.ui.components.TodoActionsSheet
-import ru.andmar.flint.features.todo.ui.home.TodoDetailsCard
+import ru.andmar.flint.features.todo.ui.components.cards.TodoDetailsCard
 import ru.andmar.flint.features.todo.ui.home.TodoDetailsState
 import ru.andmar.flint.navigation.NavigationRoutes
+import ru.andmar.flint.ui.main.MainScreenActions
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -122,7 +121,9 @@ fun DetailsScreen(
             noteActionsSheetState = noteActionsSheetState,
             showNoteActionsSheet = showNoteActionsSheet,
             scope = scope,
-            onClickEditNote = { onNavigationRoutes(NavigationRoutes.EditNoteScreenRoute(it)) }
+            onClickEditNote = { onNavigationRoutes(NavigationRoutes.EditNoteScreenRoute(it))
+            Log.i("noteId", it)
+            }
         ) { viewModel.onActions(it) }
     }
 
@@ -241,6 +242,7 @@ fun DetailsBody(
                             .padding(bottom = 5.dp)
                     )
                 }
+                /*
                 if (noteDetailsState.noteDetails.fix) {
 
                     InputChip(
@@ -262,6 +264,8 @@ fun DetailsBody(
                         modifier = Modifier.padding(10.dp)
                     )
 
+
+                 */
                     /*
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Icon(
@@ -280,6 +284,16 @@ fun DetailsBody(
 
                      */
 
+              //  }
+
+                if (noteDetailsState.noteDetails.labelDetails.id.isNotBlank()) {
+                    FilterChip(
+                        selected = true,
+                        onClick = { onActions(DetailsScreenActions.DeleteNoteLabel(noteDetailsState.noteDetails)) },
+                        label = { Text(noteDetailsState.noteDetails.labelDetails.title) },
+                        trailingIcon = { Icon(painterResource(R.drawable.close), null) },
+                        modifier = Modifier.padding(horizontal = 5.dp)
+                    )
                 }
             }
         }

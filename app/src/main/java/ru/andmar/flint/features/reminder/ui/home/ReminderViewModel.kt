@@ -32,11 +32,14 @@ class ReminderViewModel(
 
     val reminderDetailsListState: StateFlow<ReminderDetailsListState> =
         reminderUseCase.getReminders().map { reminderDetails ->
+            val filteredList = reminderDetails.filter{ !it.archive }.filter{ !it.deleted }.sortedWith(
+                compareByDescending<ReminderDetails> { it.fix }
+                    .thenByDescending { it.updateTime }
+            )
+            val (done, active) = filteredList.partition { it.done }
             ReminderDetailsListState(
-                reminderDetails.filter{ !it.deleted }.sortedWith(
-                    compareByDescending<ReminderDetails> { it.fix }
-                        .thenByDescending { it.updateTime }
-                )
+                reminderDetailsList = active,
+                reminderDetailsDoneList = done
             )
         }.stateIn(
             scope = viewModelScope,
@@ -66,6 +69,11 @@ class ReminderViewModel(
                             reminderActionsUseCase.highlightReminder(reminderAction.reminderDetails)
                         }
                     }
+                    is ReminderAction.ArchiveReminder -> {
+                        flintActions {
+                            reminderActionsUseCase.archiveReminder(reminderAction.reminderDetails)
+                        }
+                    }
                     is ReminderAction.EditReminder -> {
                         viewModelScope.launch {
                             _reminderUiAction.send(
@@ -77,7 +85,7 @@ class ReminderViewModel(
                     }
                     is ReminderAction.DeleteReminder -> {
                         flintActions {
-                            reminderActionsUseCase.updateReminderDeleteState(reminderAction.reminderDetails)
+                            reminderActionsUseCase.deleteReminder(reminderAction.reminderDetails)
                         }
                         viewModelScope.launch {
                             _reminderUiAction.send(

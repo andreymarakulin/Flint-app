@@ -8,6 +8,8 @@ interface TodoAction {
     data class FixTodo(val todoDetails: TodoDetails): TodoAction
     data class DoneTodo(val todoDetails: TodoDetails): TodoAction
     data class HighlightTodo(val todoDetails: TodoDetails): TodoAction
+    data class ArchiveTodo(val todoDetails: TodoDetails): TodoAction
+    data class EditLabel(val todoDetails: TodoDetails): TodoAction
     data class EditTodo(val todoId: String): TodoAction
     data class DeleteTodo(val todoDetails: TodoDetails): TodoAction
     data class RestoreTodo(val todoDetails: TodoDetails): TodoAction

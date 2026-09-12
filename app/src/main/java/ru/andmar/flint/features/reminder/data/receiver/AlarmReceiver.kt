@@ -17,6 +17,7 @@ class AlarmReceiver : BroadcastReceiver(), KoinComponent {
     override fun onReceive(context: Context, intent: Intent?) {
         val message = intent?.getStringExtra("EXTRA_MESSAGE") ?: ""
         val reminderId = intent?.getStringExtra("EXTRA_ID")
+        val isRepeat = intent?.getBooleanExtra("EXTRA_IS_REPEAT", false) ?: false
 
         val notificationService = NotificationService(context)
 
@@ -29,7 +30,7 @@ class AlarmReceiver : BroadcastReceiver(), KoinComponent {
         val pendingResult = goAsync()
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                 reminderRepository.updateReminderDoneState(reminderId)
+                if (!isRepeat) reminderRepository.updateReminderDoneState(reminderId)
             } catch (e: Exception) {
                 notificationService.showNotification(e.message ?: "Не удалось обновить напоминание в Firestore")
             } finally {

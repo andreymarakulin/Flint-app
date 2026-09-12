@@ -5,7 +5,7 @@ import androidx.compose.material3.SheetState
 import androidx.compose.runtime.Composable
 import ru.andmar.flint.R
 import ru.andmar.flint.core.ui.ModalSheetItem
-import ru.andmar.flint.core.ui.components.ActionsSheet
+import ru.andmar.flint.core.ui.components.sheet.ActionsSheet
 import ru.andmar.flint.features.reminder.domain.model.ReminderDetails
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -55,6 +55,11 @@ fun reminderActionsSheetItems(
         } else R.drawable.favorite,
         description = null
     ) {onActions(ReminderAction.HighlightReminder(reminderDetails)) },
+    ModalSheetItem(
+        title = R.string.archive_title,
+        icon = R.drawable.archive,
+        description = null
+    ) { onActions(ReminderAction.ArchiveReminder(reminderDetails)) },
     ModalSheetItem(
         title = R.string.edit_title,
         icon = R.drawable.edit,

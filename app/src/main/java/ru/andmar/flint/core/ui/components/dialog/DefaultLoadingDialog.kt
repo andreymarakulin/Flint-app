@@ -1,4 +1,4 @@
-package ru.andmar.flint.core.ui.components
+package ru.andmar.flint.core.ui.components.dialog
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize

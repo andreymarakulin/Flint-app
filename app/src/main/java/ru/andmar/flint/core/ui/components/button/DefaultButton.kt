@@ -1,4 +1,4 @@
-package ru.andmar.flint.core.ui.components
+package ru.andmar.flint.core.ui.components.button
 
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding

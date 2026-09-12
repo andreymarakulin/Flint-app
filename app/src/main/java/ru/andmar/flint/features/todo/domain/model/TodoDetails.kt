@@ -1,13 +1,15 @@
 package ru.andmar.flint.features.todo.domain.model
 
 import ru.andmar.flint.core.ui.components.DefaultDetails
+import ru.andmar.flint.features.label.domain.model.LabelDetails
+import ru.andmar.flint.features.reminder.domain.model.ReminderDetails
 import kotlin.random.Random
 
 data class TodoDetails(
     override val id: String = "",
     val noteId: String = "",
-    val reminderId: String = "",
-    val labelId: String = "",
+    val labelDetails: LabelDetails = LabelDetails(),
+    val reminderDetails: ReminderDetails = ReminderDetails(),
     override val title: String = "",
     override val text: String = "",
     val color: String = "",

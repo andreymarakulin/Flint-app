@@ -24,6 +24,12 @@ class ReminderActionsUseCase(private val reminderRepository: ReminderRepository)
         )
     }
 
+    suspend fun archiveReminder(reminderDetails: ReminderDetails) = runCatching {
+        reminderRepository.editReminder(
+            reminderDetails.copy(archive = true)
+        )
+    }
+
     suspend fun updateReminderDeleteState(reminderDetails: ReminderDetails) = runCatching {
         reminderRepository.editReminder(
             reminderDetails.copy(deleted = !reminderDetails.deleted)

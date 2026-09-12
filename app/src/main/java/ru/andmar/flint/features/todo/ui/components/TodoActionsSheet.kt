@@ -5,7 +5,8 @@ import androidx.compose.material3.SheetState
 import androidx.compose.runtime.Composable
 import ru.andmar.flint.R
 import ru.andmar.flint.core.ui.ModalSheetItem
-import ru.andmar.flint.core.ui.components.ActionsSheet
+import ru.andmar.flint.core.ui.components.sheet.ActionsSheet
+import ru.andmar.flint.features.note.ui.components.NoteAction
 import ru.andmar.flint.features.todo.domain.model.TodoDetails
 
 
@@ -61,6 +62,18 @@ fun todoActionsSheetItems(
         description = null
     ) {
         onActions(TodoAction.HighlightTodo(todoDetails))
+    },
+    ModalSheetItem(
+        title = R.string.archive_title,
+        icon = R.drawable.archive,
+        description = null
+    ) {onActions(TodoAction.ArchiveTodo(todoDetails)) },
+    ModalSheetItem(
+        title = R.string.label_title,
+        icon = R.drawable.label,
+        description = null
+    ) {
+        onActions(TodoAction.EditLabel(todoDetails))
     },
     ModalSheetItem(
         title = R.string.edit_title,

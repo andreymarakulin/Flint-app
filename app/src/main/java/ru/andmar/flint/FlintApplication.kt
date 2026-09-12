@@ -13,6 +13,7 @@ import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 import ru.andmar.flint.di.viewModelModule
 import ru.andmar.flint.di.repositoryModule
+import ru.andmar.flint.di.useCaseModule
 import ru.andmar.flint.features.reminder.data.notification.NotificationService
 import ru.andmar.flint.features.reminder.data.worker.ReminderWorker
 import java.util.concurrent.TimeUnit
@@ -23,7 +24,7 @@ class FlintApplication: Application() {
 
         startKoin {
             androidContext(this@FlintApplication)
-            modules(viewModelModule, repositoryModule)
+            modules(viewModelModule, useCaseModule, repositoryModule)
         }
 
         if (BuildConfig.FLAVOR == "firebase" && false) {

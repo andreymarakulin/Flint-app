@@ -16,6 +16,7 @@ data class LabelItem(
     val highlight: Boolean,
     val deleted: Boolean,
     val archive: Boolean,
+    val choice: Boolean,
     val createTime: Long,
     val updateTime: Long
 )

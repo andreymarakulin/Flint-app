@@ -42,6 +42,8 @@
     <string name="highlight_title">Выделить</string>
     <string name="unhighlight_title">Сделать не выделенным</string>
 
+    <string name="label_title">Ярлык</string>
+
     <string name="edit_title">Редактировать</string>
     <string name="delete_title">Удалить</string>
 
@@ -86,6 +88,19 @@
     <string name="edit_note_title">Редактируйте свою заметку</string>
     <string name="edit_note_button">Редактировать заметку</string>
 
+    <!--LabelScreen-->
+    <string name="labels_title">Ярлыки</string>
+    <string name="delete_lael_snackbar_title">Вы удалили ярлык</string>
+    <string name="move_to_basket_label_snackbar_title">Ярлык перемещён в корзину</string>
+
+    <!--EntryLabelScreen-->
+    <string name="entry_label_title">Новый ярлык</string>
+    <string name="entry_label_button">Создать ярлык</string>
+
+    <!--EditLabelScreen-->
+    <string name="edit_label_title">Редактирование ярлыка</string>
+    <string name="edit_label_button">Редактировать ярлык</string>
+
     <!--ReminderScreen-->
     <string name="delete_reminder_snackbar_title">Вы удалили напоменание</string>
     <string name="move_to_basket_reminder_snackbar_title">Напоминание перемещено в корзину</string>
@@ -118,7 +133,7 @@
     <string name="archive_title">Архив</string>
     <string name="archive_manage_button">Управление акхивом</string>
 
-    <string name="basket_title">Карзина</string>
+    <string name="basket_title">Корзина</string>
     <string name="basket_manage_button">Управление карзиной</string>
 
     <string name="about_app_title">О приложении</string>

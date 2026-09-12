@@ -7,3 +7,11 @@ fun isSignInAction(authDetails: AuthDetails, agreement: Boolean): Boolean {
         email.isNotBlank() && password.isNotBlank() && agreement
     }
 }
+
+fun isChangeEmailAction(email: String): Boolean {
+    return email.isNotBlank()
+}
+
+fun isEditPasswordAction(password: String): Boolean {
+    return password.isNotBlank()
+}

@@ -1,4 +1,4 @@
-package ru.andmar.flint.core.ui.components
+package ru.andmar.flint.core.ui.components.sheet
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,6 +17,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import ru.andmar.flint.R
 import ru.andmar.flint.core.ui.ModalSheetItem
+import ru.andmar.flint.core.ui.components.DefaultDetails
+import ru.andmar.flint.core.ui.components.DefaultModalSheetItem
 import ru.andmar.flint.features.reminder.domain.model.dateToUi
 
 @OptIn(ExperimentalMaterial3Api::class)

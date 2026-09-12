@@ -19,6 +19,11 @@ class CategoryActionsUseCase(private val categoryRepository: CategoryRepository)
             categoryDetails.copy(highlight = !categoryDetails.highlight)
         )
     }
+    suspend fun archiveCategory(categoryDetails: CategoryDetails) = runCatching {
+        categoryRepository.editCategory(
+            categoryDetails.copy(archive = true)
+        )
+    }
 
     suspend fun updateCategoryDeleteState(categoryDetails: CategoryDetails) = runCatching {
         categoryRepository.editCategory(

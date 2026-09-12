@@ -1,5 +1,6 @@
 package ru.andmar.flint.features.note.ui.details
 
+import android.util.Log
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -30,7 +31,7 @@ class DetailsViewModel(
     savedStateHandle: SavedStateHandle
 ): ViewModel() {
 
-    private val noteId: String = savedStateHandle.toRoute< NavigationRoutes.DetailsScreenRoute>().noteId
+    private val noteId: String = savedStateHandle.toRoute<NavigationRoutes.DetailsScreenRoute>().noteId
 
     val noteDetailsState: StateFlow<NoteDetailsState> =
         detailsUseCase.getNoteById(noteId).map { noteDetails ->
@@ -78,6 +79,12 @@ class DetailsViewModel(
                             noteActionsUseCase.highlightNote(noteAction.noteDetails)
                         }
                     }
+                    is NoteAction.ArchiveNote -> {
+
+                    }
+                    is NoteAction.EditLabel -> {
+
+                    }
                     is NoteAction.EditNote -> {
                         viewModelScope.launch {
                             _detailsUiAction.send(
@@ -93,6 +100,11 @@ class DetailsViewModel(
                     is NoteAction.RestoreNote -> {
 
                     }
+                }
+            }
+            is DetailsScreenActions.DeleteNoteLabel -> {
+                flintAction {
+                    noteActionsUseCase.deleteLabel(detailsScreenActions.noteDetails)
                 }
             }
             is DetailsScreenActions.TodoActions -> {

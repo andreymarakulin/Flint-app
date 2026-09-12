@@ -5,8 +5,9 @@ import androidx.compose.material3.SheetState
 import androidx.compose.runtime.Composable
 import ru.andmar.flint.R
 import ru.andmar.flint.core.ui.ModalSheetItem
-import ru.andmar.flint.core.ui.components.ActionsSheet
+import ru.andmar.flint.core.ui.components.sheet.ActionsSheet
 import ru.andmar.flint.features.category.domain.model.CategoryDetails
+import ru.andmar.flint.features.todo.ui.components.TodoAction
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -51,6 +52,11 @@ fun categoryActionsSheetItems(
     ) {
         onActions(CategoryAction.HighlightCategory(categoryDetails))
     },
+    ModalSheetItem(
+        title = R.string.archive_title,
+        icon = R.drawable.archive,
+        description = null
+    ) {onActions(CategoryAction.ArchiveCategory(categoryDetails)) },
     ModalSheetItem(
         title = R.string.edit_title,
         icon = R.drawable.edit,
